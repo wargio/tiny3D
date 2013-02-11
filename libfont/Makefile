@@ -42,8 +42,9 @@ export BINFILES	:=	$(BINFILES:.bin=.bin.h)
 export VCGFILES	:=	$(VCGFILES:.vcg=.vcg.h)
 export VSAFILES	:=	$(VSAFILES:.vsa=.vsa.h)
 
-export INCLUDE	=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
-					-I$(CURDIR)/$(BUILD) -I$(PSL1GHT)/ppu/include
+export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
+			-I$(CURDIR)/$(BUILD) -I$(PSL1GHT)/ppu/include \
+			-I$(PORTLIBS)/include
 
 .PHONY: $(BUILD) install clean
 
@@ -53,8 +54,8 @@ $(BUILD):
 
 install: $(BUILD)
 	@echo Copying...
-	@cp include/*.h $(PSL1GHT)/ppu/include
-	@cp *.a $(PSL1GHT)/ppu/lib
+	@cp include/*.h $(PORTLIBS)/include
+	@cp *.a $(PORTLIBS)/lib/
 	@echo Done!
 
 clean:

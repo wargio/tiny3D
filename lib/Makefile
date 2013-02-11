@@ -60,8 +60,8 @@ shader:
 
 install: $(BUILD)
 	@echo Copying...
-	@cp include/*.h $(PSL1GHT)/ppu/include
-	@cp *.a $(PSL1GHT)/ppu/lib
+	@cp include/*.h $(PORTLIBS)/include
+	@cp *.a $(PORTLIBS)/lib
 	@echo Done!
 
 clean:

@@ -19,6 +19,7 @@ Credits
     HACKERCHANNEL  - PSL1GHT
     Oopo           - ps3libraries
     xerpi	   - porting the lib to v2
+    deroad/Wargio  - check code
 
 License
 -------
