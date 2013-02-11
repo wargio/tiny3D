@@ -1,4 +1,4 @@
-Tiny3D 2.0
+Tiny3D 2.0 + libfont
 ==========
 
 Tiny3D is one library to work with 2D/3D graphics (obsolete).
@@ -18,6 +18,7 @@ Credits
     ElSemi         - Vertex Program Compiler and other useful sample code
     HACKERCHANNEL  - PSL1GHT
     Oopo           - ps3libraries
+    xerpi	   - porting the lib to v2
 
 License
 -------
