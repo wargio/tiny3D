@@ -1326,7 +1326,12 @@ void tiny3d_SetTextureWrap(u32 unit, u32 offset, u32 width, u32 height, u32 stri
 
 void * tiny3d_AllocTexture(u32 size)
 {
-   return rsxMemalign(16, size);
+   return rsxMemalign(64, size);
+}
+
+void tiny3d_FreeTexture(void *ptr)
+{
+   rsxFree(ptr);
 }
 
 u32 tiny3d_TextureOffset(void * text)

@@ -264,6 +264,9 @@ int tiny3d_MenuActive();
 
 void * tiny3d_AllocTexture(u32 size);
 
+// free a texture
+void tiny3d_FreeTexture(void *ptr);
+
 // RSX use the offset to work with textures. This function return the texture offset from the pointer to the RSX memory allocated
 
 u32 tiny3d_TextureOffset(void * text);
