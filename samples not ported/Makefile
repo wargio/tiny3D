@@ -1,8 +1,8 @@
 
 .PHONY: all pkg clean
 
-FTINCLUDE	:= $(PS3DEV)/host/ppu/include/freetype/freetype.h
-ZIPINCLUDE	:= $(PS3DEV)/host/ppu/include/zip.h
+FTINCLUDE	:= $(PS3DEV)/portlibs/ppu/include/freetype/freetype.h
+ZIPINCLUDE	:= $(PS3DEV)/portlibs/ppu/include/zip.h
 
 all:
 	
