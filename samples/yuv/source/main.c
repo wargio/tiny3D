@@ -13,16 +13,16 @@
 #include <io/pad.h>
 
 #include <sysmodule/sysmodule.h>
-#include <pngdec/loadpng.h>
+#include <pngdec/pngdec.h>
 
 #include <tiny3d.h>
 #include <libfont.h>
 
 extern unsigned char msx[];
 
-#include "picture_png.bin.h"
+#include "picture_png_bin.h"
 
-PngDatas png1; // PNG container
+pngData png1; // PNG container
 
 
 struct {
@@ -147,14 +147,9 @@ void drawScene(int frame)
 void Load_PNG()
 {
 
-    // datas for PNG from memory
-
-    png1.png_in   = (void *) picture_png_bin;
-    png1.png_size = sizeof  (picture_png_bin);
-
     // load PNG from memory
 
-    LoadPNG(&png1, NULL);
+    pngLoadFromBuffer(picture_png_bin, picture_png_bin_size, &png1);
 
 }
 
@@ -240,7 +235,7 @@ u8 * build_U_8bits(u8 *texture, u32 * argb, u32 w, u32 h, u32 stride)
     int n, m;
 
     u8 * p = (u8 *) argb;
-    u8 * p2;
+    //u8 * p2;
 
     for(n = 0; n < h; n+=2)
         {
@@ -251,7 +246,7 @@ u8 * build_U_8bits(u8 *texture, u32 * argb, u32 w, u32 h, u32 stride)
           
             u = -(0.148 * r) - (0.291 * g) + (0.439 * b) + 128.0;
 
-            p2 = p + stride;
+            //p2 = p + stride;
 
             r = (float) (u32) p[m+1]; g = (float) (u32) p[m+2];b = (float) (u32)p[m+3];
           
@@ -283,7 +278,7 @@ u8 * build_V_8bits(u8 *texture, u32 * argb, u32 w, u32 h, u32 stride)
     int n, m;
 
     u8 * p = (u8 *) argb;
-    u8 * p2;
+    //u8 * p2;
 
     for(n = 0; n < h; n+=2)
         {
@@ -294,7 +289,7 @@ u8 * build_V_8bits(u8 *texture, u32 * argb, u32 w, u32 h, u32 stride)
 
             v =  (0.439 * r) - (0.368 * g) - (0.071 * b) + 128.0;
 
-            p2 = p + stride;
+            //p2 = p + stride;
 
             r = (float) (u32) p[m+1]; g = (float) (u32) p[m+2];b = (float) (u32)p[m+3];
 
@@ -343,9 +338,9 @@ void LoadTexture()
     texture[0].offset = tiny3d_TextureOffset(texture_pointer);
     texture[0].w      = png1.width;
     texture[0].h      = png1.height;
-    texture[0].stride = png1.wpitch;
+    texture[0].stride = png1.pitch;
 
-    texture_pointer = (u32 *) build_AYUV_32bits((u8 *)texture_pointer, png1.bmp_out, png1.width, png1.height, png1.wpitch);
+    texture_pointer = (u32 *) build_AYUV_32bits((u8 *)texture_pointer, png1.bmp_out, png1.width, png1.height, png1.pitch);
 
     
 
@@ -355,9 +350,9 @@ void LoadTexture()
     texture[1].offset = tiny3d_TextureOffset(texture_pointer);
     texture[1].w      = png1.width;
     texture[1].h      = png1.height;
-    texture[1].stride = png1.wpitch/4;
+    texture[1].stride = png1.pitch/4;
 
-    texture_pointer = (u32 *)  build_Y_8bits((u8 *)texture_pointer, png1.bmp_out, png1.width, png1.height, png1.wpitch);
+    texture_pointer = (u32 *)  build_Y_8bits((u8 *)texture_pointer, png1.bmp_out, png1.width, png1.height, png1.pitch);
 
     // build U 8 bits map from PNG (width/2 * height/2) * 1
 
@@ -367,7 +362,7 @@ void LoadTexture()
     texture[2].h      = png1.height/2;
     texture[2].stride = texture[2].w;
 
-    texture_pointer = (u32 *)  build_U_8bits((u8 *)texture_pointer, png1.bmp_out, png1.width, png1.height, png1.wpitch);
+    texture_pointer = (u32 *)  build_U_8bits((u8 *)texture_pointer, png1.bmp_out, png1.width, png1.height, png1.pitch);
 
     // build V 8 bits map from PNG (width/2 * height/2) * 1
 
@@ -377,7 +372,7 @@ void LoadTexture()
     texture[3].h      = png1.height/2;
     texture[3].stride = texture[3].w;
 
-    texture_pointer = (u32 *)  build_V_8bits((u8 *)texture_pointer, png1.bmp_out, png1.width, png1.height, png1.wpitch);
+    texture_pointer = (u32 *)  build_V_8bits((u8 *)texture_pointer, png1.bmp_out, png1.width, png1.height, png1.pitch);
 
 
 }
@@ -385,14 +380,14 @@ void LoadTexture()
 void exiting()
 {
 
-    SysUnloadModule(SYSMODULE_PNGDEC);
+    sysModuleUnload(SYSMODULE_PNGDEC);
   
 }
 
 s32 main(s32 argc, const char* argv[])
 {
-	PadInfo padinfo;
-	PadData paddata;
+	padInfo padinfo;
+	padData paddata;
 	int i;
     int frame = 0;
 	
@@ -400,7 +395,7 @@ s32 main(s32 argc, const char* argv[])
 
 	ioPadInit(7);
     
-    SysLoadModule(SYSMODULE_PNGDEC);
+    sysModuleLoad(SYSMODULE_PNGDEC);
 
     atexit(exiting); // Tiny3D register the event 3 and do exit() call when you exit  to the menu
 
@@ -424,7 +419,7 @@ s32 main(s32 argc, const char* argv[])
 
         // Enable alpha blending.
         tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
-            NV30_3D_BLEND_FUNC_DST_RGB_ONE_MINUS_SRC_ALPHA | NV30_3D_BLEND_FUNC_DST_ALPHA_ZERO,
+            TINY3D_BLEND_FUNC_DST_RGB_ONE_MINUS_SRC_ALPHA | TINY3D_BLEND_FUNC_DST_ALPHA_ZERO,
             TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
 
 

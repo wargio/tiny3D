@@ -68,7 +68,7 @@ void DrawBackground3D(u32 rgba)
 }
 
 */
-int videoscale_x = -120;
+int videoscale_x = 0;
 int videoscale_y = -120;
 
 void drawScene()
@@ -112,6 +112,8 @@ void LoadTexture()
 
     if(!texture_mem) return; // fail!
 
+    ResetFont();
+
     texture_pointer = texture_mem;
 
     texture_pointer = (u32 *) AddFontFromBitmapArray((u8 *) msx   , (u8 *) texture_pointer,  0, 254,  8,  8, 1, BIT7_FIRST_PIXEL);
@@ -138,6 +140,7 @@ s32 main(s32 argc, const char* argv[])
 	// Load texture
 
     LoadTexture();
+
 	
 	// Ok, everything is setup. Now for the main loop.
 	while(1) {
@@ -169,7 +172,7 @@ s32 main(s32 argc, const char* argv[])
 
         // Enable alpha blending.
         tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
-            NV30_3D_BLEND_FUNC_DST_RGB_ONE_MINUS_SRC_ALPHA | NV30_3D_BLEND_FUNC_DST_ALPHA_ZERO,
+            TINY3D_BLEND_FUNC_DST_RGB_ONE_MINUS_SRC_ALPHA | TINY3D_BLEND_FUNC_DST_ALPHA_ZERO,
             TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
       
         ps3pad_read();

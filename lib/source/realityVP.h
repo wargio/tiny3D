@@ -20,7 +20,7 @@ typedef struct _VPAttribute
 {
 	unsigned int NameOffset;
 	unsigned int Index;
-} internal_reality_VertexProgramAttribute;
+} rsxtiny_VertexProgramAttribute;
 
 union _VPFloatUInt
 {
@@ -35,9 +35,9 @@ typedef struct _VPConstant
 	unsigned char Type;
 	unsigned char Internal;	//Is an internal constant? (unnamed but needs to be set)
 	union _VPFloatUInt Values[4];
-} internal_reality_VertexProgramConstant;
+} rsxtiny_VertexProgramConstant;
 
-typedef struct _internal_reality_VertexProgram
+typedef struct _rsxtiny_VertexProgram
 {
 	unsigned short Magic;		//Magic text 'VP'
 	unsigned short NumInsts;	//Number of vertex program instructions
@@ -50,25 +50,25 @@ typedef struct _internal_reality_VertexProgram
 	unsigned int OutputMask;		//Used output registers
 
 	//data (constants, attributes, ucode)
-} internal_reality_VertexProgram;
+} rsxtiny_VertexProgram;
 
 #pragma pack(pop)
 
 
 
 
-void *internal_reality_VertexProgramGetUCode(internal_reality_VertexProgram *vertexprogram);
+void *rsxtiny_VertexProgramGetUCode(rsxtiny_VertexProgram *vertexprogram);
 
-unsigned int internal_reality_VertexProgramGetInputMask(internal_reality_VertexProgram *vertexprogram);
+unsigned int rsxtiny_VertexProgramGetInputMask(rsxtiny_VertexProgram *vertexprogram);
 
-unsigned int internal_reality_VertexProgramGetOutputMask(internal_reality_VertexProgram *vertexprogram);
+unsigned int rsxtiny_VertexProgramGetOutputMask(rsxtiny_VertexProgram *vertexprogram);
 
-internal_reality_VertexProgramAttribute *internal_reality_VertexProgramGetAttributes(internal_reality_VertexProgram *vertexprogram);
+rsxtiny_VertexProgramAttribute *rsxtiny_VertexProgramGetAttributes(rsxtiny_VertexProgram *vertexprogram);
 
-int internal_reality_VertexProgramGetInputAttribute(internal_reality_VertexProgram *vertexprogram,const char *name);
+int rsxtiny_VertexProgramGetInputAttribute(rsxtiny_VertexProgram *vertexprogram,const char *name);
 
-internal_reality_VertexProgramConstant *internal_reality_VertexProgramGetConstants(internal_reality_VertexProgram *vertexprogram);
+rsxtiny_VertexProgramConstant *rsxtiny_VertexProgramGetConstants(rsxtiny_VertexProgram *vertexprogram);
 
-int internal_reality_VertexProgramGetConstant(internal_reality_VertexProgram *vertexprogram,const char *name);
+int rsxtiny_VertexProgramGetConstant(rsxtiny_VertexProgram *vertexprogram,const char *name);
 
 #endif

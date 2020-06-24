@@ -10,8 +10,13 @@
 #pragma once
 
 #include <sysutil/video.h>
-#include <rsx/gcm_sys.h>
-#include "nv40v1.h"
+
+#ifdef OLD_TINY3D
+    #include <rsx/gcm.h>
+    #include <rsx/nv40.h>
+#else
+    #include <rsx/rsx.h>
+#endif
 
 #include "matrix.h"
 
@@ -45,20 +50,23 @@ typedef enum
 
 } type_polygon;
 
-#define INT_REALITY_CLEAR_BUFFERS_DEPTH				0x00000001
-#define INT_REALITY_CLEAR_BUFFERS_STENCIL				0x00000002
-#define INT_REALITY_CLEAR_BUFFERS_COLOR_R				0x00000010
-#define INT_REALITY_CLEAR_BUFFERS_COLOR_G				0x00000020
-#define INT_REALITY_CLEAR_BUFFERS_COLOR_B				0x00000040
-#define INT_REALITY_CLEAR_BUFFERS_COLOR_A				0x00000080
+#define INT_REALITY_CLEAR_BUFFERS_DEPTH                 0x00000001
+#define INT_REALITY_CLEAR_BUFFERS_STENCIL               0x00000002
+#define INT_REALITY_CLEAR_BUFFERS_COLOR_R               0x00000010
+#define INT_REALITY_CLEAR_BUFFERS_COLOR_G               0x00000020
+#define INT_REALITY_CLEAR_BUFFERS_COLOR_B               0x00000040
+#define INT_REALITY_CLEAR_BUFFERS_COLOR_A               0x00000080
+
+#define INT_3D_CLEAR_BUFFERS_COLOR_A                    0x00000080
+#define INT_3D_CLEAR_BUFFERS_STENCIL                    0x00000002
 
 typedef enum 
 {
     TINY3D_CLEAR_COLOR      = INT_REALITY_CLEAR_BUFFERS_COLOR_R | INT_REALITY_CLEAR_BUFFERS_COLOR_G 
-                            | INT_REALITY_CLEAR_BUFFERS_COLOR_B | NV30_3D_CLEAR_BUFFERS_COLOR_A,
+                            | INT_REALITY_CLEAR_BUFFERS_COLOR_B | INT_3D_CLEAR_BUFFERS_COLOR_A,
     TINY3D_CLEAR_ZBUFFER    = INT_REALITY_CLEAR_BUFFERS_DEPTH,
     
-    TINY3D_CLEAR_STENCIL    = NV30_3D_CLEAR_BUFFERS_STENCIL,
+    TINY3D_CLEAR_STENCIL    = INT_3D_CLEAR_BUFFERS_STENCIL,
 
     TINY3D_CLEAR_ALL        = TINY3D_CLEAR_COLOR | TINY3D_CLEAR_ZBUFFER | TINY3D_CLEAR_STENCIL
 
@@ -193,6 +201,12 @@ typedef enum
 int tiny3d_Init(u32 vertex_buff_size);
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------*/
+/* EXIT (it is also called from Exit() function)                                                                                               */
+/*---------------------------------------------------------------------------------------------------------------------------------------------*/
+
+void tiny3d_Exit(void);
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------*/
 /* CLEAR                                                                                                                                       */
 /*---------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -235,9 +249,43 @@ See userviewport sample.
 
 void tiny3d_UserViewport(int onoff, float pos_x, float pos_y, float scale2D_x, float scale2D_y, float scale3D_x, float scale3D_y);
 
+/* tiny3d_UserViewPort: change to user ViewPort.
+
+The same thing of tiny3d_UserViewport() but with coordinates correction (from center) for 3D mode
+
+*/
+
+void tiny3d_UserViewport2(int onoff, float pos2D_x, float pos2D_y, float scale2D_x, float scale2D_y, 
+                                    float correction3D_x, float correction3D_y, float scale3D_x, float scale3D_y);
+
+/*
+
+tiny3d_UserViewportSurface: change to user ViewPort for surface render in 2D.
+
+Usually, 2D virtual coordinates is based in 848.0 x 512.0. With this function you can change it for surfaces
+
+In 3D it uses -1.0 to 1.0 range
+
+*/
+
+void tiny3d_UserViewportSurface(int onoff, float width_2D, float height_2D);
+
+/*
+
+tiny3d_Project2D(): change to 2D mode
+
+*/
+
 void tiny3d_Project2D();
 
+/*
+
+tiny3d_Project3D(): change to 3D mode
+
+*/
+
 void tiny3d_Project3D();
+
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------*/
 /* FLIP                                                                                                                                        */
@@ -247,6 +295,12 @@ void tiny3d_Project3D();
 // Polygons must be writen after tiny3d_Clear() and before tiny3d_Flip() functions
 
 void tiny3d_Flip();
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------*/
+/* SYNC                                                                                                                                        */
+/*---------------------------------------------------------------------------------------------------------------------------------------------*/
+
+void tiny3d_WaitRSX();
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------*/
 /* CALLBACK                                                                                                                                    */
@@ -263,9 +317,6 @@ int tiny3d_MenuActive();
 // used to alloc RSX memory for the textures. The best idea is allocate a big area to work with textures, because you cannot deallocate the memory used
 
 void * tiny3d_AllocTexture(u32 size);
-
-// free a texture
-void tiny3d_FreeTexture(void *ptr);
 
 // RSX use the offset to work with textures. This function return the texture offset from the pointer to the RSX memory allocated
 
@@ -321,6 +372,7 @@ void tiny3d_SetProjectionMatrix(MATRIX *mat);
 // set Model/View matrix: Call before tiny3d_SetPolygon()
 
 void tiny3d_SetMatrixModelView(MATRIX *mat);
+
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------*/
 /* DRAW POLYGONS                                                                                                                               */
@@ -457,10 +509,20 @@ void tiny3d_Enable_YUV(int select);
 
 void tiny3d_Disable_YUV();
 
-// disable YUV, changes to 2D context and reset other things. You can use this function if you changes the shaders or send polygons OUT of Tiny3D
+// disable YUV, changes to 2D context and reset others things. You can use this function if you changes the shaders or send polygons OUT of Tiny3D
 // context and more later, you want return to the Tiny3D context (NOTE: Untested function)
 
 void tiny3d_Dirty_Status();
+
+// return tini3D gcmContextData
+
+void * tiny3d_Get_GCM_Context(void);
+
+// test and do space in the context if it is neccesary, to send rsx commands, shaders, etc, externally (1 space = 4 bytes). 
+// if (space <=0) clear the context space
+// it call to the gcm callback present in gcmContextData to work
+
+void tiny3d_DoCmd_Space(int space);
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------*/
 /* VIDEO                                                                                                                                       */
@@ -468,7 +530,11 @@ void tiny3d_Dirty_Status();
 
 extern int Video_currentBuffer;
 
-extern videoResolution Video_Resolution;
+#ifdef OLD_TINY3D
+    extern VideoResolution Video_Resolution;
+#else
+    extern videoResolution Video_Resolution;
+#endif
 
 extern u32 * Video_buffer[2];
 

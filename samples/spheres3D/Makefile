@@ -36,7 +36,7 @@ INCLUDES	:=	include
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:=	-ltiny3d -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lpngdec -lsysmodule -lm -lrsx
+LIBS		:=	-ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lpngdec -lsysmodule -lm
 
 
 #---------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).self EBOOT.BIN
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).fake.self $(OUTPUT).self EBOOT.BIN
 
 #---------------------------------------------------------------------------------
 run:
