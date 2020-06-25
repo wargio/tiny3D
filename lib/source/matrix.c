@@ -319,3 +319,72 @@ VECTOR VectorNormalPlane(VECTOR v1, VECTOR v2, VECTOR v3)
 
     return v;
 }
+
+
+   
+MATRIX MakeLookAtMatrix(VECTOR eye, VECTOR center, VECTOR up)
+{
+  double x[3], y[3], z[3], mag;
+
+  MATRIX mat;
+  
+  float *m = (float *) &mat;
+
+  /* Difference eye and center vectors to make Z vector. */
+  z[0] = eye.x - center.x;
+  z[1] = eye.y - center.y;
+  z[2] = eye.z - center.z;
+
+  /* Normalize Z. */
+  mag = sqrt(z[0]*z[0] + z[1]*z[1] + z[2]*z[2]);
+  if (mag) {
+    z[0] /= mag;
+    z[1] /= mag;
+    z[2] /= mag;
+  }
+
+  /* Up vector makes Y vector. */
+  y[0] = up.x;
+  y[1] = up.y;
+  y[2] = up.z;
+
+  /* X vector = Y cross Z. */
+  x[0] =  y[1] * z[2] - y[2] * z[1];
+  x[1] = -y[0] * z[2] + y[2] * z[0];
+  x[2] =  y[0] * z[1] - y[1] * z[0];
+
+  /* Recompute Y = Z cross X. */
+  y[0] =  z[1] * x[2] - z[2] * x[1];
+  y[1] = -z[0] * x[2] + z[2] * x[0];
+  y[2] =  z[0] * x[1] - z[1] * x[0];
+
+  /* Normalize X. */
+  mag = sqrt(x[0]*x[0] + x[1]*x[1] + x[2]*x[2]);
+  if (mag) {
+    x[0] /= mag;
+    x[1] /= mag;
+    x[2] /= mag;
+  }
+
+  /* Normalize Y. */
+  mag = sqrt(y[0]*y[0] + y[1]*y[1] + y[2]*y[2]);
+  if (mag) {
+    y[0] /= mag;
+    y[1] /= mag;
+    y[2] /= mag;
+  }
+
+  /* Build resulting view matrix. */
+  m[0] = (float) x[0];  m[4] = (float) x[1];
+  m[8] = (float) x[2];  m[12] = (float) (-x[0]*eye.x + -x[1]*eye.y + -x[2]*eye.z);
+
+  m[1] = (float) y[0];  m[5] = (float) y[1];
+  m[9] = (float) y[2];  m[13] = (float) (-y[0]*eye.x + -y[1]*eye.y + -y[2]*eye.z);
+
+  m[2] = (float) z[0];  m[6] = (float) z[1];
+  m[10] = (float) z[2]; m[14] = (float) (-z[0]*eye.x + -z[1]*eye.y + -z[2]*eye.z);
+
+  m[3] = 0.0;   m[7] = 0.0;  m[11] = 0.0;  m[15] = 1.0;
+
+  return mat;
+}

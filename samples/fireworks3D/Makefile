@@ -10,8 +10,8 @@ endif
 #---------------------------------------------------------------------------------
 #  TITLE, APPID, CONTENTID, ICON0 SFOXML before ppu_rules.
 #---------------------------------------------------------------------------------
-TITLE		:=	Sprites 2D - Tiny3D
-APPID		:=	SPRITES01
+TITLE		:=	Sample1 - SOUNDLIB
+APPID		:=	SNDS00001
 CONTENTID	:=	UP0001-$(APPID)_00-0000000000000000
 
 include $(PSL1GHT)/ppu_rules
@@ -28,7 +28,7 @@ SCETOOL_FLAGS	+=
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
 SOURCES		:=	source
-DATA		:=	data
+DATA		:=	data source/../../resources
 SHADERS		:=	shaders
 INCLUDES	:=	include
 
@@ -36,7 +36,8 @@ INCLUDES	:=	include
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:=	-ltiny3d -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lpngdec -lsysmodule -lm -lrsx
+LIBS		:=	-lfont -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lsysmodule \
+			-laudioplayer -lmpg123 -logg -lspu_sound -laudio -lm $(PORTLIBS)/modules/spu_soundmodule.bin.a
 
 
 #---------------------------------------------------------------------------------
@@ -107,7 +108,7 @@ export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 export INCLUDE	:=	$(foreach dir,$(INCLUDES), -I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
 					$(LIBPSL1GHT_INC) \
-					-I$(CURDIR)/$(BUILD) -I$(PORTLIBS)/include
+					-I$(CURDIR)/$(BUILD) -I$(PORTLIBS)/include -I$(PORTLIBS)/modules
 
 #---------------------------------------------------------------------------------
 # build a list of library paths

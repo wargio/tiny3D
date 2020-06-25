@@ -190,53 +190,17 @@ void drawScene()
 
 void Load_PNG()
 {
-    int i;
-    
-	// datas for PNG from memory
-    struct
-    {
-		const void *buffer;
-		u32 size;
-	}png_index[8] = 
-	{
-		{
-			ghost1_png_bin,
-			ghost1_png_bin_size
-		},
-		{
-			ghost2_png_bin,
-			ghost2_png_bin_size
-		},
-		{
-			ghost3_png_bin,
-			ghost3_png_bin_size
-		},
-		{
-			ghost4_png_bin,
-			ghost4_png_bin_size
-		},
-		{
-			ghost5_png_bin,
-			ghost5_png_bin_size
-		},
-		{
-			ghost6_png_bin,
-			ghost6_png_bin_size
-		},
-		{
-			ghost7_png_bin,
-			ghost7_png_bin_size
-		},
-		{
-			ghost8_png_bin,
-			ghost8_png_bin_size
-		},
-	};
- 
+
     // load PNG from memory
 
-    for(i = 0; i < 8; i++)
-		pngLoadFromBuffer(png_index[i].buffer, png_index[i].size, &texture_ghost[i]);
+    pngLoadFromBuffer(ghost1_png_bin, ghost1_png_bin_size, &texture_ghost[0]);
+    pngLoadFromBuffer(ghost2_png_bin, ghost2_png_bin_size, &texture_ghost[1]);
+    pngLoadFromBuffer(ghost3_png_bin, ghost3_png_bin_size, &texture_ghost[2]);
+    pngLoadFromBuffer(ghost4_png_bin, ghost4_png_bin_size, &texture_ghost[3]);
+    pngLoadFromBuffer(ghost5_png_bin, ghost5_png_bin_size, &texture_ghost[4]);
+    pngLoadFromBuffer(ghost6_png_bin, ghost6_png_bin_size, &texture_ghost[5]);
+    pngLoadFromBuffer(ghost7_png_bin, ghost7_png_bin_size, &texture_ghost[6]);
+    pngLoadFromBuffer(ghost8_png_bin, ghost8_png_bin_size, &texture_ghost[7]);
 
 }
 
@@ -344,7 +308,7 @@ s32 main(s32 argc, const char* argv[])
 
         // Enable alpha blending.
         tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
-            NV30_3D_BLEND_FUNC_DST_RGB_ONE_MINUS_SRC_ALPHA | NV30_3D_BLEND_FUNC_DST_ALPHA_ZERO,
+            TINY3D_BLEND_FUNC_DST_RGB_ONE_MINUS_SRC_ALPHA | TINY3D_BLEND_FUNC_DST_ALPHA_ZERO,
             TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
       
 

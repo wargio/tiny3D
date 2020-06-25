@@ -23,8 +23,8 @@
 
 // include fonts
 
-#include "dejavusans_ttf.bin.h"
-#include "andika_ttf.bin.h"
+#include "dejavusans_ttf_bin.h"
+#include "andika_ttf_bin.h"
 
 /******************************************************************************************************************************************************/
 /* TTF functions to load and convert fonts                                                                                                             */
@@ -231,11 +231,11 @@ void LoadTexture()
 
     ResetFont();
 
-    TTFLoadFont(NULL, (void *) dejavusans_ttf_bin, sizeof(dejavusans_ttf_bin));
+    TTFLoadFont(NULL, (void *) dejavusans_ttf_bin, dejavusans_ttf_bin_size);
     texture_pointer = (u32 *) AddFontFromTTF((u8 *) texture_pointer, 32, 255, 32, 32, TTF_to_Bitmap);
     TTFUnloadFont();
 
-    TTFLoadFont(NULL, (void *) andika_ttf_bin, sizeof(andika_ttf_bin));
+    TTFLoadFont(NULL, (void *) andika_ttf_bin, andika_ttf_bin_size);
     texture_pointer = (u32 *) AddFontFromTTF((u8 *) texture_pointer, 32, 255, 32, 32, TTF_to_Bitmap);
     texture_pointer = (u32 *) AddFontFromTTF((u8 *) texture_pointer, 32, 255, 64, 64, TTF_to_Bitmap);
     TTFUnloadFont();
@@ -244,8 +244,8 @@ void LoadTexture()
     
 }
 
-PadInfo padinfo;
-PadData paddata;
+padInfo padinfo;
+padData paddata;
 
 s32 main(s32 argc, const char* argv[])
 {
@@ -291,7 +291,7 @@ s32 main(s32 argc, const char* argv[])
 
         // Enable alpha blending.
         tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
-            NV30_3D_BLEND_FUNC_DST_RGB_ONE_MINUS_SRC_ALPHA | NV30_3D_BLEND_FUNC_DST_ALPHA_ZERO,
+            TINY3D_BLEND_FUNC_DST_RGB_ONE_MINUS_SRC_ALPHA | TINY3D_BLEND_FUNC_DST_ALPHA_ZERO,
             TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
 
         drawScene(); // Draw

@@ -8,6 +8,10 @@
 
 #include <tiny3d.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* NOTE: LIBFONT is thinkin to work with Tiny3D 2D mode: you need to call tiny3d_Project2D() before to work with draw functions */
 
 // initialize all datas. After you call it you don't have any font to use
@@ -44,6 +48,25 @@ RSX texture.
 u8 * AddFontFromTTF(u8 *texture, u8 first_char, u8 last_char, int w, int h, 
     void (* ttf_callback) (u8 chr, u8 * bitmap, short *w, short *h, short *y_correction));
 
+/*
+
+SetFontTextureMethod: enables/disables multitexture merge with font color.
+
+It needs an external texture loaded in unit 1 (tiny3d_SetTextureWrap(1, ...)) and tiny3d_SelMultiTexturesMethod() enabled
+
+*/
+
+#define FONT_SINGLE_TEXTURE  0 // default method
+#define FONT_DOUBLE_TEXTURE  1 // enable and maps external second texture char by char
+#define FONT_DOUBLE_TEXTURE2 2 // enable and maps external second texture using the screen coordinates rectangle
+#define FONT_DOUBLE_TEXTUREMOD 3 // enable and maps external second texture using the module of coordinates rectangle (fixed with SetDoubleTextureModule())
+
+void SetFontTextureMethod(int method);
+
+// used with FONT_DOUBLE_TEXTUREMOD for double texture method: second texture coordinates is calculated using (virtual_screen % mod)/mod relation
+
+void SetDoubleTextureModule(int module_x, int module_y);
+
 /* function to select the current font to use (the first is 0. if you select an undefined font, it uses font 0) */
 
 void SetCurrentFont(int nfont);
@@ -79,6 +102,10 @@ float GetFontX();
 
 float GetFontY();
 
+// change the screen width/height limits (usually 848 x 512.0. It is used only for center function and one of multitexture modes)
+
+void SetFontScreenLimits(float width, float height);
+
 // function to draw one character
 
 void DrawChar(float x, float y, float z, u8 chr);
@@ -90,5 +117,9 @@ float DrawString(float x, float y, char *str);
 // function to draw with fomat string similar to printf. It return X incremented
 
 float DrawFormatString(float x, float y, char *format, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

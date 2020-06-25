@@ -14,11 +14,12 @@
 #include <io/pad.h>
 
 #include <sysmodule/sysmodule.h>
-#include <pngdec/loadpng.h>
+#include <pngdec/pngdec.h>
 
 #include <tiny3d.h>
 
 #include "utils.h"
+
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------*/
 /* LISTS                                                                                                                                       */
@@ -304,7 +305,6 @@ void drawStage1(int substage)
                
 }
 
-
 void LoadTexture()
 {
 
@@ -315,15 +315,33 @@ void exiting()
   
 }
 
+void DrawBackground2D(u32 rgba)
+{
+    tiny3d_SetPolygon(TINY3D_QUADS);
+
+    tiny3d_VertexPos(0  , 0  , 65535);
+    tiny3d_VertexColor(rgba);
+
+    tiny3d_VertexPos(847, 0  , 65535);
+
+    tiny3d_VertexPos(847, 511, 65535);
+
+    tiny3d_VertexPos(0  , 511, 65535);
+    tiny3d_End();
+}
+
+
 s32 main(s32 argc, const char* argv[])
 {
-	PadInfo padinfo;
-	PadData paddata;
+	padInfo padinfo;
+	padData paddata;
 	int i;
+
+
 	
     // initalize Tiny3D using Z32 and 4MB for vertex datas
 
-	tiny3d_Init(/*TINY3D_Z16 | */4*1024*1024);
+	tiny3d_Init(/*TINY3D_Z16 | */32*1024*1024);
 
 	ioPadInit(7);
 
@@ -367,7 +385,7 @@ s32 main(s32 argc, const char* argv[])
 
         // Enable alpha blending.
         tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
-            NV30_3D_BLEND_FUNC_DST_RGB_ONE_MINUS_SRC_ALPHA | NV30_3D_BLEND_FUNC_DST_ALPHA_ZERO,
+            TINY3D_BLEND_FUNC_DST_RGB_ONE_MINUS_SRC_ALPHA | TINY3D_BLEND_FUNC_DST_ALPHA_ZERO,
             TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
 
 
@@ -420,8 +438,6 @@ s32 main(s32 argc, const char* argv[])
         tiny3d_Flip();
 		
 	}
-
-    
 	
 	return 0;
 }

@@ -39,6 +39,13 @@ static struct t_font_datas
     int autocenter;
     int autonewline;
 
+    u32 rsx_text_bk_offset;
+    int enable_doubletextures;
+
+    float screen_w, screen_h;
+
+    int mod_x, mod_y;
+
     float X,Y,Z;
 
 } font_datas;
@@ -55,6 +62,16 @@ void ResetFont()
     font_datas.autonewline = 0;
 
     font_datas.sx = font_datas.sy = 8;
+
+    font_datas.rsx_text_bk_offset = 0;
+
+    font_datas.enable_doubletextures = 0;
+    
+    font_datas.screen_w = 848.0f;
+    font_datas.screen_h = 512.0f;
+
+    font_datas.mod_x = font_datas.mod_y = 32;
+
 }
 
 u8 * AddFontFromBitmapArray(u8 *font, u8 *texture, u8 first_char, u8 last_char, int w, int h, int bits_per_pixel, int byte_order)
@@ -85,7 +102,15 @@ u8 * AddFontFromBitmapArray(u8 *font, u8 *texture, u8 first_char, u8 last_char, 
         font_datas.fonts[font_datas.number_of_fonts].fy[n] = 0;
     }
 
-       
+    if(!font_datas.rsx_text_bk_offset) {
+
+        texture = (u8 *) ((((long) texture) + 15) & ~15);
+        font_datas.rsx_text_bk_offset = tiny3d_TextureOffset(texture);
+        memset(texture, 255, 8 * 8 * 2);
+        texture += 8 * 8 * 2;
+        texture = (u8 *) ((((long) texture) + 15) & ~15);
+    }
+
     for(n = first_char; n <= last_char; n++) {
 
         font_datas.fonts[font_datas.number_of_fonts].fw[n] = w;
@@ -176,7 +201,15 @@ u8 * AddFontFromTTF(u8 *texture, u8 first_char, u8 last_char, int w, int h,
         font_datas.fonts[font_datas.number_of_fonts].fy[n] = 0;
     }
 
-       
+    if(!font_datas.rsx_text_bk_offset) {
+
+        texture = (u8 *) ((((long) texture) + 15) & ~15);
+        font_datas.rsx_text_bk_offset = tiny3d_TextureOffset(texture);
+        memset(texture, 255, 8 * 8 * 2);
+        texture += 8 * 8 * 2;
+        texture = (u8 *) ((((long) texture) + 15) & ~15);
+    }
+    
     for(n = first_char; n <= last_char; n++) {
         
         short hh = h;
@@ -254,6 +287,17 @@ void SetFontColor(u32 color, u32 bkcolor)
     font_datas.bkcolor = bkcolor;
 }
 
+void SetFontTextureMethod(int method)
+{
+    font_datas.enable_doubletextures = method;
+}
+
+void SetDoubleTextureModule(int module_x, int module_y)
+{
+    font_datas.mod_x = module_x;
+    font_datas.mod_y = module_y;
+}
+
 void SetFontAutoCenter(int on_off)
 {
     font_datas.autocenter  = on_off;
@@ -281,6 +325,12 @@ float GetFontY()
     return font_datas.Y;
 }
 
+void SetFontScreenLimits(float width, float height)
+{
+    font_datas.screen_w = width;
+    font_datas.screen_h = height;
+}
+
 static int WidthFromStr(u8 * str)
 {
     int w = 0;
@@ -291,6 +341,8 @@ static int WidthFromStr(u8 * str)
 
     return w;
 }
+
+#define MOD_FLOAT(x,y) (((float)(((u32) (x)) % y)) / (float) y)
 
 void DrawChar(float x, float y, float z, u8 chr)
 {
@@ -303,10 +355,17 @@ void DrawChar(float x, float y, float z, u8 chr)
     if(chr < font_datas.fonts[font_datas.current_font].first_char) return;
    
     if(font_datas.bkcolor) {
+
+        tiny3d_SetTextureWrap(0, font_datas.rsx_text_bk_offset, 8,
+        8, 8 * 2, 
+        TINY3D_TEX_FORMAT_A4R4G4B4, TEXTWRAP_CLAMP, TEXTWRAP_CLAMP, TEXTURE_LINEAR);
+        
+
         tiny3d_SetPolygon(TINY3D_QUADS);
 
         tiny3d_VertexPos(x     , y     , z);
         tiny3d_VertexColor(font_datas.bkcolor);
+        tiny3d_VertexTexture(0.0f, 0.0f);
 
         tiny3d_VertexPos(x + dx2, y     , z);
 
@@ -322,26 +381,82 @@ void DrawChar(float x, float y, float z, u8 chr)
     if(chr > font_datas.fonts[font_datas.current_font].last_char) return;
 
     // Load sprite texture
-    tiny3d_SetTexture(0, font_datas.fonts[font_datas.current_font].rsx_text_offset + font_datas.fonts[font_datas.current_font].rsx_bytes_per_char 
+    tiny3d_SetTextureWrap(0, font_datas.fonts[font_datas.current_font].rsx_text_offset + font_datas.fonts[font_datas.current_font].rsx_bytes_per_char 
         * (chr - font_datas.fonts[font_datas.current_font].first_char), font_datas.fonts[font_datas.current_font].w,
         font_datas.fonts[font_datas.current_font].h, font_datas.fonts[font_datas.current_font].w * 
         ((font_datas.fonts[font_datas.current_font].color_format == TINY3D_TEX_FORMAT_A8R8G8B8) ? 4 : 2), 
-        font_datas.fonts[font_datas.current_font].color_format, 1);
+        font_datas.fonts[font_datas.current_font].color_format, TEXTWRAP_CLAMP, TEXTWRAP_CLAMP, TEXTURE_LINEAR);
 
     tiny3d_SetPolygon(TINY3D_QUADS);
 
     tiny3d_VertexPos(x     , y     , z);
     tiny3d_VertexColor(font_datas.color);
     tiny3d_VertexTexture(0.0f, 0.0f);
+    
+    switch(font_datas.enable_doubletextures) {
+        case 1:
+            tiny3d_VertexTexture2(0.0f, 0.0f);
+            break;
+        case 2:
+            tiny3d_VertexTexture2((x)/848.0f, (y)/512.0f);
+            break;
+        case 3:
+            tiny3d_VertexTexture2(MOD_FLOAT(x, font_datas.mod_x), MOD_FLOAT(y, font_datas.mod_y));
+            break;
+        default:
+            break;
+    }
 
     tiny3d_VertexPos(x + dx, y     , z);
     tiny3d_VertexTexture(0.95f, 0.0f);
 
+    switch(font_datas.enable_doubletextures) {
+        case 1:
+            tiny3d_VertexTexture2(0.95f, 0.0f);
+            break;
+        case 2:
+            tiny3d_VertexTexture2((x+dx)/848.0f, y/512.0f);
+            break;
+        case 3:
+            tiny3d_VertexTexture2(MOD_FLOAT(x+dx, font_datas.mod_x), MOD_FLOAT(y, font_datas.mod_y));
+            break;
+        default:
+            break;
+    }
+
     tiny3d_VertexPos(x + dx, y + dy, z);
     tiny3d_VertexTexture(0.95f, 0.95f);
+    
+    switch(font_datas.enable_doubletextures) {
+        case 1:
+            tiny3d_VertexTexture2(0.95f, 0.95f);
+            break;
+        case 2:
+            tiny3d_VertexTexture2((x+dx)/848.0f, (y+dy)/512.0f);
+            break;
+        case 3:
+            tiny3d_VertexTexture2(MOD_FLOAT(x+dx, font_datas.mod_x), MOD_FLOAT(y+dy,font_datas.mod_y));
+            break;
+        default:
+            break;
+    }
 
     tiny3d_VertexPos(x     , y + dy, z);
     tiny3d_VertexTexture(0.0f, 0.95f);
+    
+    switch(font_datas.enable_doubletextures) {
+        case 1:
+            tiny3d_VertexTexture2(0.0f, 0.95f);
+            break;
+        case 2:
+            tiny3d_VertexTexture2(x/848.0f, (y+dy)/512.0f);
+            break;
+        case 3:
+            tiny3d_VertexTexture2(MOD_FLOAT(x, font_datas.mod_x), MOD_FLOAT(y+dy, font_datas.mod_y));
+            break;
+        default:
+            break;
+    }
 
     tiny3d_End();
 
@@ -368,7 +483,7 @@ float DrawString(float x, float y, char *str)
 
     if(font_datas.autocenter) {
     
-        x= (848 - WidthFromStr((u8 *) str)) / 2;
+        x= (font_datas.screen_w - WidthFromStr((u8 *) str)) / 2;
 
     }
 
@@ -409,7 +524,7 @@ float DrawFormatString(float x, float y, char *format, ...)
 
     if(font_datas.autocenter) {
     
-        x = (848 - WidthFromStr((u8 *) str)) / 2;
+        x = (font_datas.screen_w - WidthFromStr((u8 *) str)) / 2;
 
     }
 

@@ -1,11 +1,11 @@
 
 .PHONY: all pkg clean
 
-FTINCLUDE	:= $(PS3DEV)/portlibs/ppu/include/freetype/freetype.h
+FTINCLUDE	:= $(PS3DEV)/portlibs/ppu/include/freetype2/freetype/freetype.h
 ZIPINCLUDE	:= $(PS3DEV)/portlibs/ppu/include/zip.h
 
 all:
-	
+	$(MAKE) -C fireworks3D
 	$(MAKE) -C spheres3D
 	$(MAKE) -C sprites2D
 	$(MAKE) -C fonts
@@ -16,6 +16,7 @@ all:
 	$(MAKE) -C tiny3d_lists
 	$(MAKE) -C userviewport
 pkg:
+	$(MAKE) pkg -C fireworks3D
 	$(MAKE) pkg -C spheres3D
 	$(MAKE) pkg -C sprites2D
 	$(MAKE) pkg -C fonts
@@ -27,6 +28,7 @@ pkg:
 	$(MAKE) pkg -C userviewport
 
 clean:
+	$(MAKE) clean -C fireworks3D
 	$(MAKE) clean -C spheres3D
 	$(MAKE) clean -C sprites2D
 	$(MAKE) clean -C fonts

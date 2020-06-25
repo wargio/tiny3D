@@ -1,32 +1,32 @@
 #include "realityVP.h"
 #include "string.h"
 
-void *internal_reality_VertexProgramGetUCode(internal_reality_VertexProgram *vertexprogram)
+void *rsxtiny_VertexProgramGetUCode(rsxtiny_VertexProgram *vertexprogram)
 {
 	unsigned char *ptr=(unsigned char *)vertexprogram;
 
 	return (void*)(ptr+vertexprogram->UCodeOffset);
 }
 
-unsigned int internal_reality_VertexProgramGetInputMask(internal_reality_VertexProgram *vertexprogram)
+unsigned int rsxtiny_VertexProgramGetInputMask(rsxtiny_VertexProgram *vertexprogram)
 {
 	return vertexprogram->InputMask;
 }
 
-unsigned int internal_reality_VertexProgramGetOutputMask(internal_reality_VertexProgram *vertexprogram)
+unsigned int rsxtiny_VertexProgramGetOutputMask(rsxtiny_VertexProgram *vertexprogram)
 {
 	return vertexprogram->OutputMask;
 }
 
-internal_reality_VertexProgramAttribute *internal_reality_VertexProgramGetAttributes(internal_reality_VertexProgram *vertexprogram)
+rsxtiny_VertexProgramAttribute *rsxtiny_VertexProgramGetAttributes(rsxtiny_VertexProgram *vertexprogram)
 {
-	return (internal_reality_VertexProgramAttribute*) (((unsigned char*)vertexprogram)+vertexprogram->AttributesOffset);
+	return (rsxtiny_VertexProgramAttribute*) (((unsigned char*)vertexprogram)+vertexprogram->AttributesOffset);
 }
 
-int internal_reality_VertexProgramGetInputAttribute(internal_reality_VertexProgram *vertexprogram,const char *name)
+int rsxtiny_VertexProgramGetInputAttribute(rsxtiny_VertexProgram *vertexprogram,const char *name)
 {
 	int i;
-	internal_reality_VertexProgramAttribute *attributes = internal_reality_VertexProgramGetAttributes(vertexprogram);
+	rsxtiny_VertexProgramAttribute *attributes = rsxtiny_VertexProgramGetAttributes(vertexprogram);
 	for(i=0;i<vertexprogram->NumAttributes;++i)
 	{
 		char *namePtr;
@@ -40,15 +40,15 @@ int internal_reality_VertexProgramGetInputAttribute(internal_reality_VertexProgr
 	return -1;
 }
 
-internal_reality_VertexProgramConstant *internal_reality_VertexProgramGetConstants(internal_reality_VertexProgram *vertexprogram)
+rsxtiny_VertexProgramConstant *rsxtiny_VertexProgramGetConstants(rsxtiny_VertexProgram *vertexprogram)
 {
-	return (internal_reality_VertexProgramConstant*) (((unsigned char*)vertexprogram)+vertexprogram->ConstantsOffset);
+	return (rsxtiny_VertexProgramConstant*) (((unsigned char*)vertexprogram)+vertexprogram->ConstantsOffset);
 }
 
-int internal_reality_VertexProgramGetConstant(internal_reality_VertexProgram *vertexprogram,const char *name)
+int rsxtiny_VertexProgramGetConstant(rsxtiny_VertexProgram *vertexprogram,const char *name)
 {
 	int i;
-	internal_reality_VertexProgramConstant *constants = internal_reality_VertexProgramGetConstants(vertexprogram);
+	rsxtiny_VertexProgramConstant *constants = rsxtiny_VertexProgramGetConstants(vertexprogram);
 	for(i=0;i<vertexprogram->NumConstants;++i)
 	{
 		char *namePtr;
