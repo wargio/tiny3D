@@ -8,8 +8,8 @@ ifeq ($(strip $(PSL1GHT)),)
 $(error "Please set PSL1GHT in your environment. export PSL1GHT=<path>")
 endif
 
-ifeq ($(strip $(VPCOMP)),)
-$(error "Please set VPCOMP in your environment. export VPCOMP=<path>")
+ifeq ($(strip $(CGCOMP)),)
+$(error "Please set CGCOMP in your environment. export CGCOMP=<path>")
 endif
 
 ifeq ($(strip $(RAW2H)),)
