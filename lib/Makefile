@@ -84,8 +84,8 @@ $(BUILD):
 	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 shader:
-	@echo "[VPCOMP] $(notdir $<)"
-	@$(VPCOMP) shader/vshader_text_normal.vcg shader/vshader_text_normal.rvp
+	@echo "[CGCOMP] $(notdir $<)"
+	@$(CGCOMP) shader/vshader_text_normal.vcg shader/vshader_text_normal.rvp
 	@$(RAW2H)  shader/vshader_text_normal.rvp source/vshader_text_normal.vcg.h source/vshader_text_normal.vcg.S vshader_text_normal_bin
 
 install: $(BUILD)
