@@ -22,6 +22,10 @@
 
 #define LIST_BLOCK_SIZE 65536
 
+#ifndef RSX_MEMCPY
+#define RSX_MEMCPY    __builtin_memcpy
+#endif // RSX_MEMCPY
+
 static int grab_list = 0;
 static u32 *list_base;
 static u32 *last_list;
@@ -32,7 +36,7 @@ static int curr_list_index=0;
 static int set_apply_matrix = 0;
 static MATRIX apply_matrix;
 
-static void push_list_cmd(u32 cmd, u32 params) 
+static void push_list_cmd(u32 cmd, u32 params)
 {
     if(grab_list !=1 ) return;
 
@@ -49,13 +53,13 @@ static void push_list_cmd(u32 cmd, u32 params)
     curr_list[curr_list_index++] = (cmd<<16) | params;
 }
 
-static inline  void push_list_int(int value) 
+static inline  void push_list_int(int value)
 {
     if(grab_list !=1 ) return;
     curr_list[curr_list_index++] = value;
 }
 
-static inline void push_list_float(float value) 
+static inline void push_list_float(float value)
 {
     if(grab_list !=1 ) return;
     *((float *) &curr_list[curr_list_index++]) = value;
@@ -63,42 +67,42 @@ static inline void push_list_float(float value)
 
 static void push_position_list(float x, float y, float z, float w)
 {
-    
+
     if(set_apply_matrix) {
 
         VECTOR v;
 
         v.x = x; v.y = y; v.z = z;
-        
+
         v = MatrixVectorMultiply(apply_matrix, v);
 
         push_list_cmd(LIST_VERTEXPOS, 4); push_list_float(v.x); push_list_float(v.y); push_list_float(v.z); push_list_float(w);
 
     } else {
-        
+
         push_list_cmd(LIST_VERTEXPOS, 4); push_list_float(x); push_list_float(y); push_list_float(z); push_list_float(w);
-    
+
     }
 
 }
 
 static void push_normal_list(float x, float y, float z)
 {
-    
+
     if(set_apply_matrix) {
 
         VECTOR v;
 
         v.x = x; v.y = y; v.z = z;
-        
+
         v = MatrixVectorMultiply3x3(apply_matrix, v);
 
         push_list_cmd(LIST_VERTEXNORMAL, 3); push_list_float(v.x); push_list_float(v.y); push_list_float(v.z);
 
     } else {
-        
+
         push_list_cmd(LIST_VERTEXNORMAL, 3); push_list_float(x); push_list_float(y); push_list_float(z);
-    
+
     }
 
 }
@@ -108,7 +112,7 @@ int tiny3d_RecordList() {
     if(grab_list) return -1;
 
     set_apply_matrix = 0;
-    
+
     list_base = malloc(LIST_BLOCK_SIZE);
     if(!list_base) return -1;
 
@@ -126,22 +130,22 @@ void * tiny3d_StopList() {
     if(!grab_list) return NULL;
 
     if(grab_list == 1) {
-        curr_list[curr_list_index++] = LIST_STOP<<16; 
+        curr_list[curr_list_index++] = LIST_STOP<<16;
     }
 
     // optimize the list size
 
     if(curr_list_index < LIST_BLOCK_SIZE/4) {
-        
+
         u32 *t = malloc(curr_list_index * 4);
-        
+
         if(t) {
-            memcpy((void *) t, (void *) curr_list, curr_list_index * 4);
+            RSX_MEMCPY((void *) t, (void *) curr_list, curr_list_index * 4);
             free(curr_list);
             if(last_list == NULL) list_base = t;
             else *last_list = (int) (long) t;
         }
-    
+
     }
 
 
@@ -158,11 +162,11 @@ void * tiny3d_StopList() {
 
 void tiny3d_DrawList(void * headlist)
 {
-  
+
     int list_index;
 
     if(!headlist) return;
-    
+
     if(grab_list) {
         push_list_cmd(LIST_NEWLIST, 1);
         push_list_int((int)(long) headlist);
@@ -203,11 +207,11 @@ void tiny3d_DrawList(void * headlist)
             case LIST_VERTEXNORMAL:
                 tiny3d_Normal(get_list_float(0), get_list_float(1), get_list_float(2));
                 break;
-            
+
             case LIST_MATRIX:{
                 MATRIX world;
-                
-                memcpy((void *) &world, (void *) &list[list_index], 4*4*4);
+
+                RSX_MEMCPY((void *) &world, (void *) &list[list_index], 4*4*4);
                 world = MatrixMultiply(world, old_world);
                 tiny3d_SetMatrixModelView(&world);
                 break;
@@ -215,8 +219,8 @@ void tiny3d_DrawList(void * headlist)
 
             case LIST_MATRIXDYN:{
                 MATRIX world;
-                
-                memcpy((void *) &world, (void *) (long) list[list_index], 4*4*4);
+
+                RSX_MEMCPY((void *) &world, (void *) (long) list[list_index], 4*4*4);
                 world = MatrixMultiply(world, old_world);
                 tiny3d_SetMatrixModelView(&world);
                 break;
@@ -256,15 +260,15 @@ void tiny3d_DrawList(void * headlist)
             default:
                 goto end;
                 break;
-        
+
         }
 
         list_index += param;
-    
+
     }
 
-end: 
-   
+end:
+
     tiny3d_SetMatrixModelView(&old_world);
 }
 
@@ -276,7 +280,7 @@ void tiny3d_FreeList(void * headlist)
 
     u32 *list = (u32 *) headlist;
     list_index = 0;
-   
+
     while(1) {
 
         u32 param = list[list_index] & 0xffff;
@@ -289,18 +293,18 @@ void tiny3d_FreeList(void * headlist)
                 list_index = 0; param = 0;
                 break;
             }
-            
+
             case LIST_STOP:
                 free(list);
                 goto end;
                 break;
             default:
                 break;
-        
+
         }
 
         list_index += param;
-    
+
     }
 
 end: ;
@@ -309,20 +313,20 @@ end: ;
 void tiny3d_DynamicMatrixList(MATRIX *mat)
 {
     if(grab_list) {
-        
+
         set_apply_matrix = 0;
 
         push_list_cmd(LIST_MATRIXDYN, 1);
 
-        if(!mat) 
+        if(!mat)
             push_list_int((int)(long) &matrix_ident);
         else
             push_list_int((int)(long) mat);
-         
+
         return;
     }
 
-  
+
 }
 
 void tiny3d_ApplyMatrixList(MATRIX *mat)
@@ -331,13 +335,13 @@ void tiny3d_ApplyMatrixList(MATRIX *mat)
 
         set_apply_matrix = 1;
 
-        if(!mat) 
+        if(!mat)
            apply_matrix = matrix_ident;
         else
            apply_matrix =  *mat;
-         
+
         return;
     }
 
-  
+
 }

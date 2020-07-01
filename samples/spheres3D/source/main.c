@@ -1,4 +1,4 @@
-/* 
+/*
    TINY3D sample / (c) 2010 Hermes  <www.elotrolado.net>
 
 */
@@ -52,7 +52,7 @@ float light0_step = 5.0f;
 
 void drawStage1(int substage)
 {
-	
+
 	MATRIX tmp;
     static float angY = 0.0;
 
@@ -108,7 +108,7 @@ void drawStage1(int substage)
 
     // draw satellite sphere
     if(substage > 0) {
-        
+
         // calculating modelview
         tmp =    MatrixTranslation(0, 0.0, 20);
         matrix = MatrixRotationY(angY);
@@ -121,13 +121,13 @@ void drawStage1(int substage)
 
         CreateSphereNormal(4.0, 4.0, 32, 32);
     }
-        
- 
+
+
 }
 
 void drawStage2(int substage)
 {
-	
+
 	MATRIX tmp;
     static float angY =0.0;
 
@@ -179,7 +179,7 @@ void drawStage2(int substage)
     tiny3d_AmbientMaterial( 0.00f, 0.00f, 0.33f, 1.00f);
     tiny3d_DiffuseMaterial( 0.00f, 0.00f, 0.48f, 1.00f);
     tiny3d_SpecularMaterial(0.99f, 0.99f, 0.99f, 27.8f/4.0f);
-   
+
     // draw big wired sphere
     if(substage > 2) CreateSphereLine(32.0, 32.0, 32, 32);
 
@@ -204,10 +204,10 @@ void drawStage2(int substage)
         tiny3d_SetMatrixModelView(&matrix);
 
         // Load texture2
-        
+
         tiny3d_SetTextureWrap(0, texture2_offset, texture2.width, texture2.height, texture2.pitch,  TINY3D_TEX_FORMAT_A8R8G8B8,
                 TEXTWRAP_CLAMP, TEXTWRAP_CLAMP, TEXTURE_LINEAR);
-        
+
         if(substage==1)
             CreateSphereNormal(4.0, 4.0, 32, 32);
         else
@@ -234,7 +234,7 @@ void LoadTexture()
         for(n = 0; n < 254; n++) {
             for(m = 0; m < 8; m++) {
                 for(o = 0; o < 8; o++) {
-                    
+
                     p = o + (n & 15) * 8 + m * 128 + ( n / 16) * 1024;
 
                     if((msx[(n * 8) + m] << o) & 128) texture_pointer[p] = 0xffffffff; else texture_pointer[p] = 0;
@@ -256,18 +256,18 @@ void LoadTexture()
 
     texture1_offset   = 0;
     texture2_offset   = 0;
-    
+
     // load PNG from memory
 
     pngLoadFromBuffer(texture1_png_bin, texture1_png_bin_size, &texture1);
     pngLoadFromBuffer(texture2_png_bin, texture2_png_bin_size, &texture2);
-    
+
     // copy texture datas from PNG to the RSX memory allocated for textures
 
     if(texture1.bmp_out) {
 
-        memcpy(texture_pointer, texture1.bmp_out, texture1.pitch * texture1.height);
-        
+        RSX_MEMCPY(texture_pointer, texture1.bmp_out, texture1.pitch * texture1.height);
+
         free(texture1.bmp_out);
 
         texture1.bmp_out= texture_pointer;
@@ -281,8 +281,8 @@ void LoadTexture()
 
      if(texture2.bmp_out) {
 
-        memcpy(texture_pointer, texture2.bmp_out, texture2.pitch * texture2.height);
-        
+        RSX_MEMCPY(texture_pointer, texture2.bmp_out, texture2.pitch * texture2.height);
+
         free(texture2.bmp_out);
 
         texture2.bmp_out= texture_pointer;
@@ -318,7 +318,7 @@ void exiting()
     if(!one) return;
     one = 0;
     sysModuleUnload(SYSMODULE_PNGDEC);
-  
+
 }
 
 s32 main(s32 argc, const char* argv[])
@@ -326,9 +326,9 @@ s32 main(s32 argc, const char* argv[])
 	padInfo padinfo;
 	padData paddata;
 	int i;
-	
+
     ioPadInit(7);
-    
+
     sysModuleLoad(SYSMODULE_PNGDEC);
 
     #if 0
@@ -337,19 +337,19 @@ s32 main(s32 argc, const char* argv[])
     memset(&vconfig, 0, sizeof(videoConfiguration));
 
     vconfig.resolution = VIDEO_RESOLUTION_576;
-       
+
     vconfig.format = VIDEO_BUFFER_FORMAT_XRGB;
     vconfig.pitch = 720 * 4;
-        
+
     vconfig.aspect= VIDEO_ASPECT_AUTO;
-            
+
     videoConfigure(0, &vconfig, NULL, 0);
     #endif
 
     // initalize Tiny3D using Z16 and 4MB for vertex datas:
 	tiny3d_Init(TINY3D_Z16 | 4*1024*1024);
 
-	
+
     atexit(exiting); // Tiny3D register the event 3 and do exit() call when you exit  to the menu
 
 	// Load texture
@@ -363,7 +363,7 @@ s32 main(s32 argc, const char* argv[])
         if(i & 1) stars[i].color = 0xa0a0a0ff; else stars[i].color = 0xffffffff;
         stars[i].x = (float) (848 * (rand() & 511) / 512);
         stars[i].y = (float) (rand() & 511);
-   
+
     }
 
     int nmess = 0;
@@ -372,8 +372,8 @@ s32 main(s32 argc, const char* argv[])
 
     int enable_sphere = 0;
 
-  
-	
+
+
 	// Ok, everything is setup. Now for the main loop.
 	while(1){
 
@@ -391,16 +391,16 @@ s32 main(s32 argc, const char* argv[])
         tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
             TINY3D_BLEND_FUNC_DST_RGB_ONE_MINUS_SRC_ALPHA | TINY3D_BLEND_FUNC_DST_ALPHA_ZERO,
             TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
-        
+
         if(stage == 130) {tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);goto skip_draw;}
 
 
         /* drawing stars */
- 
+
         tiny3d_SetPolygon(TINY3D_TRIANGLES);
 
         for(i = 0; i < 256; i++) {
-    
+
             tiny3d_VertexPos(stars[i].x, stars[i].y, 65535.0f); // note pos is always the first element of the vertex
             tiny3d_VertexColor(stars[i].color);
 
@@ -414,13 +414,13 @@ s32 main(s32 argc, const char* argv[])
         if(stage == 128) enable_sphere = 0;
 
         if(stage < 128) {
-		    if(stage < 8) 
+		    if(stage < 8)
                 drawStage1(stage & 7); // Draw
             else
                 drawStage2(stage & 7);
         }
-        
-    
+
+
         /* CNANGE TO 2D */
 
         tiny3d_Project2D(); // change to 2D context ( virtual size of the screen is 848.0 x 512.0)
@@ -442,12 +442,12 @@ s32 main(s32 argc, const char* argv[])
         // RENDERING IN THE REAL SCREEN
 
         tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
-         
+
         // draw the surface before to enable alpha test
         // this surface countain the real scene captured in one texture of 1920 x 1080
 
         tiny3d_SetTextureWrap(0, surface_offset, surface_w,
-            surface_h, surface_p,  
+            surface_h, surface_p,
             TINY3D_TEX_FORMAT_A8R8G8B8, TEXTWRAP_CLAMP, TEXTWRAP_CLAMP, TEXTURE_LINEAR);
 
         tiny3d_SetPolygon(TINY3D_QUADS);
@@ -461,11 +461,11 @@ s32 main(s32 argc, const char* argv[])
 
         tiny3d_VertexPos(848, 512, 65535);
         tiny3d_VertexTexture(1.0f, 1.0f);
-       
+
 
         tiny3d_VertexPos(0  , 512, 65535);
         tiny3d_VertexTexture(0.0f, 1.0f);
-      
+
 
         tiny3d_End();
 
@@ -482,7 +482,7 @@ s32 main(s32 argc, const char* argv[])
 
             MATRIX tmp;
             static float angY =0.0;
-            
+
             angY += 0.025; // update rotation
 
             // enable 3D
@@ -502,32 +502,32 @@ s32 main(s32 argc, const char* argv[])
 
             // fix ModelView Matrix
             tiny3d_SetMatrixModelView(&matrix);
-            
+
             // lighting
             tiny3d_SetLightsOff();
             tiny3d_SetAmbientLight(0.5f, 0.5f, 0.5f);
             tiny3d_SetLight(0, 50.0f, 50.0f, 0.0f, 0.95f, 0.95f, 0.95f,  LIGHT_DIFFUSE);
-            
+
             // material
             tiny3d_EmissiveMaterial(0.0f,  0.0f,  0.0, 0.0f);
             tiny3d_AmbientMaterial(0.33f, 0.33f, 0.33f, 1.0f);
             tiny3d_DiffuseMaterial(0.58f, 0.58, 0.58, 1.0f);
             tiny3d_SpecularMaterial(0.99f, 0.99f, 0.99f, 27.8f);
-           
+
            // texture 0
             tiny3d_SetTextureWrap(0, texture1_offset, texture1.width, texture1.height, texture1.pitch,  TINY3D_TEX_FORMAT_A8R8G8B8,
                 TEXTWRAP_CLAMP, TEXTWRAP_CLAMP, TEXTURE_LINEAR);
 
             // texture1
             tiny3d_SetTextureWrap(1, surface_offset, surface_w,
-                surface_h, surface_p,  
+                surface_h, surface_p,
                 TINY3D_TEX_FORMAT_A8R8G8B8, TEXTWRAP_CLAMP, TEXTWRAP_CLAMP, TEXTURE_LINEAR);
 
             tiny3d_SelMultiTexturesMethod(MT_MADD_B_METHOD);
 
             CreateSphereNormalTextured2(12.0, 12.0, 32, 32);
         }
-        
+
         if(tiny3d_MenuActive()) {
             char str[]= "Menu Active";
             PrintStr( (848 - strlen(str) * 16) / 2, 460, 0, str, 0xffffffff);
@@ -549,27 +549,27 @@ skip_draw:
 		for(i = 0; i < MAX_PADS; i++){
 			if(padinfo.status[i]){
 				ioPadGetData(i, &paddata);
-				
+
 				if(paddata.BTN_CROSS){
 					return 0;
 				}
 
-            
+
 			}
-			
+
 		}
-		
+
 	}
 
-    
-	
+
+
 	return 0;
 }
 
 struct t_message message[54] =
 {
     {"Hello World !!!", 180, 1},
-    {"This is the first advanced sample", 180, 0}, 
+    {"This is the first advanced sample", 180, 0},
     {"of the Tiny3D library", 180, 0},
     {"In the following seconds the sample", 180, 0},
     {"will go through by different stages", 180, 2},
