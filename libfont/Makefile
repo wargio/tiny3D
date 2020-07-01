@@ -8,14 +8,6 @@ ifeq ($(strip $(PSL1GHT)),)
 $(error "Please set PSL1GHT in your environment. export PSL1GHT=<path>")
 endif
 
-ifeq ($(strip $(VPCOMP)),)
-$(error "Please set VPCOMP in your environment. export VPCOMP=<path>")
-endif
-
-ifeq ($(strip $(RAW2H)),)
-$(error "Please set RAW2H in your environment. export RAW2H=<path>")
-endif
-
 include	$(PSL1GHT)/ppu_rules
 
 #---------------------------------------------------------------------------------
