@@ -3,6 +3,10 @@
 #include "rsxtiny.h"
 #include "realityVP.h"
 
+#ifndef RSX_MEMCPY
+#define RSX_MEMCPY    __builtin_memcpy
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -26,7 +30,7 @@ void rsxtiny_Nop(tiny_gcmContextData *context);
 #define REALITY_RSX_MEMORY    0
 #define REALITY_LOCATION_CELL_MEMORY    1
 
-enum surfaces {REALITY_SURFACE_COLOR0, REALITY_SURFACE_COLOR1, REALITY_SURFACE_COLOR2, 
+enum surfaces {REALITY_SURFACE_COLOR0, REALITY_SURFACE_COLOR1, REALITY_SURFACE_COLOR2,
         REALITY_SURFACE_COLOR3, REALITY_SURFACE_ZETA};
 void rsxtiny_SetRenderSurface(tiny_gcmContextData *context, uint8_t sufrace, uint8_t location, uint32_t offset, uint32_t pitch);
 
@@ -60,7 +64,7 @@ void rsxtiny_SetRenderSurface(tiny_gcmContextData *context, uint8_t sufrace, uin
 #define REALITY_TARGET_FORMAT_MSAA_4X                   0x00004000
 #define REALITY_TARGET_FORMAT_MSAA_4X_ROTATED           0x00005000
 
-void rsxtiny_SelectRenderTarget(tiny_gcmContextData *context, uint8_t target, uint32_t format, 
+void rsxtiny_SelectRenderTarget(tiny_gcmContextData *context, uint8_t target, uint32_t format,
                 uint16_t width, uint16_t height, uint16_t x, uint16_t y);
 
 void rsxtiny_Viewport(tiny_gcmContextData *context, uint16_t width, uint16_t height);
@@ -110,14 +114,14 @@ typedef struct {
     uint32_t in_reg;
     uint32_t out_reg;
     uint32_t data[];
-} rsxtiny_VertexProgram_old; 
+} rsxtiny_VertexProgram_old;
 
 typedef struct {
     uint32_t offset;
     uint32_t size;
     uint32_t num_regs;
     uint32_t data[];
-} rsxtiny_FragmentProgram; 
+} rsxtiny_FragmentProgram;
 
 void rsxtiny_LoadVertexProgram(tiny_gcmContextData *context, rsxtiny_VertexProgram *prog);
 void rsxtiny_SetVertexProgramConstant4f(tiny_gcmContextData *context, int constant, float values[4]);

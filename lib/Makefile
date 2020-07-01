@@ -96,7 +96,7 @@ install: $(BUILD)
 
 clean:
 	@echo Clean...
-	@rm -rf $(BUILD) $(OUTPUT).elf $(OUTPUT).self $(OUTPUT).a
+	@rm -rf $(BUILD) $(OUTPUT).elf $(OUTPUT).self $(OUTPUT).fake.self $(OUTPUT).a
 
 else
 

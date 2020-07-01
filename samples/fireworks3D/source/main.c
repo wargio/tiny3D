@@ -1,4 +1,4 @@
-/* 
+/*
     Copyright (C) 1985, 2010  Francisco Muñoz "Hermes" <www.elotrolado.net>
 
     This program is free software: you can redistribute it and/or modify
@@ -82,13 +82,13 @@ u32 inited;
 #define INITED_AUDIOPLAYER  8
 
 void release_all() {
-    
+
 	if(inited & INITED_CALLBACK)
         sysUtilUnregisterCallback(SYSUTIL_EVENT_SLOT0);
 
 	if(inited & INITED_AUDIOPLAYER)
         StopAudio();
-	
+
     if(inited & INITED_SOUNDLIB)
         SND_End();
 
@@ -104,21 +104,21 @@ void release_all() {
     }
 
     inited=0;
-	
+
 }
 
 static void sys_callback(uint64_t status, uint64_t param, void* userdata) {
 
      switch (status) {
 		case SYSUTIL_EXIT_GAME:
-				
+
 			release_all();
 			sysProcessExit(1);
 			break;
-      
+
        default:
 		   break;
-         
+
 	}
 }
 
@@ -132,15 +132,15 @@ int     explosion_is_stereo;
 
 void snd_explo(int voice, int pos)
 {
-		
+
 	if(SND_StatusVoice(8 + voice) == SND_UNUSED) {
-	
+
         int l,r;
 
         // sound balance
 		l=((pos - 848 / 2) <  100) ? 128 : 80;
 		r=((pos - 848 / 2) > -100) ? 128 : 80;
-        
+
         // play voice with 40 ms of delay (distance simulation of fireworks)
 		SND_SetVoice(8 + voice, (explosion_is_stereo) ? VOICE_STEREO_16BIT : VOICE_MONO_16BIT,
             explosion_freq, 40, explosion, explosion_size, l, r, NULL);
@@ -154,7 +154,7 @@ void demo()
 {
     int frame=0;
     int n,m;
-    
+
     int pause_voices=0;
 
     int button_triangle=0;
@@ -208,7 +208,7 @@ void demo()
 
         short *temp = (short *)memalign(128, SPU_SIZE(effect_size_samples));
 
-        memcpy((void *) temp, (void *) effect_samples, effect_size_samples);
+        RSX_MEMCPY((void *) temp, (void *) effect_samples, effect_size_samples);
 
         free(effect_samples);
 
@@ -219,8 +219,8 @@ void demo()
     explosion_size = 8000*3*2; // 8000 Hz * 3 seconds * 2 bytes (MONO 16 bits)
 
     explosion      = (short *) malloc(explosion_size);
-    
-    
+
+
     //s_printf("Decoding Explosion\n");
 
     // decode the Ogg sound file included to memory. It stops by EOF or when samples exceed explosion_size
@@ -231,7 +231,7 @@ void demo()
         i asume "explosion_size" is sufficient and not expensive with memory
     */
 
-    
+
     /******************************************************************/
     /* IMPORTANT!!!: You must call SND_Pause(0) before to use voices. */
     /******************************************************************/
@@ -239,12 +239,12 @@ void demo()
     SND_Pause(0);
 
     //s_printf("Playing Effect\n");
-    
+
     SND_SetVoice( 2, (effect_is_stereo) ? VOICE_STEREO_16BIT : VOICE_MONO_16BIT, effect_freq, 0, effect_samples, effect_size_samples, 255, 255, NULL);
 
     //s_printf("Playing MP3\n");
-   
-    /* 
+
+    /*
     open as memory device the 2003.mp3 sample. It return 0x666 to 0x669 value and i use it to switch internally the device used.
 
     PlayAudio functions and StopAudio() closes the device calling internally to mem_close()
@@ -252,7 +252,7 @@ void demo()
     */
 
     FILE *fp = (FILE *) mem_open((void *) m2003_mp3_bin, m2003_mp3_bin_size);
-   
+
     /* Play the MP3 using the fp returned by fopen() or mem_open. Note the AUDIO_INFINITE_FLAG to play it continuously */
 
     if(PlayAudiofd(fp, 0,  AUDIO_INFINITE_TIME)==0) inited|= INITED_AUDIOPLAYER;
@@ -260,7 +260,7 @@ void demo()
     // initializes the sin /cos int table
 
     init_tabsenofunc();
-        
+
     // fix random sequence
 
     srand(1);
@@ -272,7 +272,7 @@ void demo()
     // stars init
 
     for(n = 0; n < 256; n++) {
-        
+
         int ang = rand() & 16383;
 
         stars[n][0] = (rand() % (848 + 128)) - 128;
@@ -282,13 +282,13 @@ void demo()
 
         particles_d[n].dx = f *((float) (sin_int((ang) & 16383)) / 16384.0f);
         particles_d[n].dy = f *((float) (cosin_int((ang) & 16383)) / 16384.0f);
-        
+
         }
 
         SetFontSize(16, 32);
 
 	while(1) {
-            
+
             // clear the screen
 
             tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
@@ -306,35 +306,35 @@ void demo()
             ioPadGetInfo(&padinfo);
 
             for(n = 0; n < MAX_PADS; n++) {
-            
+
                 if(padinfo.status[n]) {
-                    
+
                     ioPadGetData(n, &paddata);
-                    
+
                     if(paddata.BTN_CROSS && frame>60*12){
-                        
-                    goto out;				
-        
+
+                    goto out;
+
                     }
-                    
+
                     if(paddata.BTN_CIRCLE){
-                    
+
                     // pressing CIRCLE play voice 5 at 144000 Hz (above its natural frequency)
 
-                    SND_SetVoice( 5, (effect_is_stereo) ? VOICE_STEREO_16BIT : VOICE_MONO_16BIT, 144000, 
-                        0, effect_samples, effect_size_samples, 255, 255, NULL);			
-        
+                    SND_SetVoice( 5, (effect_is_stereo) ? VOICE_STEREO_16BIT : VOICE_MONO_16BIT, 144000,
+                        0, effect_samples, effect_size_samples, 255, 255, NULL);
+
                     }
                     if(paddata.BTN_TRIANGLE){
-                    
+
                         if(!button_triangle) {
-                            
+
                             play_next_audio:
 
-                            if(current_file_audio < 0 && sysLv2FsOpenDir("/dev_usb/audio/", &dir) == 0) 
+                            if(current_file_audio < 0 && sysLv2FsOpenDir("/dev_usb/audio/", &dir) == 0)
                                 current_file_audio = 0;
 
-                           
+
                             if(current_file_audio >= 0) {
 
                                 while(1) {
@@ -347,41 +347,41 @@ void demo()
                                         current_file_audio = -2;
                                         break;
                                         }
-                                  
+
                                     if(strstr(entry.d_name, ".mp3") || strstr(entry.d_name, ".ogg")) {
-                                        
+
                                         snprintf(filename, sizeof(filename), "/dev_usb/audio/%s", (char *) entry.d_name);
-                                        
+
                                         // playing Audio from USB (it stops previous Ogg/MP3)
                                         if(PlayAudio(filename, 0, AUDIO_ONE_TIME)==0) inited|= INITED_AUDIOPLAYER;
                                         break;
                                     }
 
                                     current_file_audio++;
-                                    
+
                                 }
 
-                            
+
                             }
-                            
+
                             // if it fails play the default mp3
                             if(current_file_audio<0) {
                                 FILE *fp = (FILE *) mem_open((void *) m2003_mp3_bin, m2003_mp3_bin_size);
 
                                 filename[0] = 0;
-                                
+
                                 /* Play the MP3 using the fp returned by fopen() or mem_open. Note the AUDIO_INFINITE_FLAG to play it continuously */
 
                                 if(PlayAudiofd(fp, 0,  AUDIO_INFINITE_TIME)==0) inited|= INITED_AUDIOPLAYER;
                             }
 
                             }
-                        button_triangle = 1;		
-        
+                        button_triangle = 1;
+
                     } else button_triangle = 0;
 
                     if(paddata.BTN_SQUARE) {
-                    
+
                         // pause fireworks voices here
                         if(!button_square) {
                             pause_voices ^= 1;
@@ -391,15 +391,15 @@ void demo()
                     button_square=1;
 
                     } else button_square = 0;
-                   
+
                 }
             }
-            
+
             // Test if OGG/MP3 from device finish
-            
+
             if(current_file_audio>=0 && (StatusAudio()==AUDIO_STATUS_EOF || StatusAudio()==AUDIO_STATUS_ERR))
                  goto play_next_audio;
-                 
+
 
             // draw the background stars
 
@@ -407,36 +407,36 @@ void demo()
 
             for(n = 0; n < 256; n++)
             {
-            
+
                 xx = (s16) (stars[n][0]);
                 yy = (s16) (stars[n][1]);
 
                 if(n & 1) color2 = 0xffffffff;
                 else color2 = 0xcfcfcfff;
-                
+
                 if((rand() & 31) != 1) // tililar
                     {
-                
+
                     if(!(xx < 0 || xx >= 848 ||  yy < 0 ||  yy >= 512)) {
-                        
+
                         tiny3d_VertexPos(xx, yy, 65535.0f); // note pos is always the first element of the vertex
                         tiny3d_VertexColor(color2);
 
                         tiny3d_VertexPos(xx-1.0f, yy+1.0f, 65535.0f); // note color element is not necessary repeat here
-                        tiny3d_VertexPos(xx+1.0f, yy+1.0f, 65535.0f); 
+                        tiny3d_VertexPos(xx+1.0f, yy+1.0f, 65535.0f);
                     }
-                    
+
                 }
             }
-            
+
             tiny3d_End();
 
             // draw fireworks from the second 10
 
             if(frame > 60*10) {
-				
+
                 for(m = 0;m < 8; m++) {
-                    
+
                     if(fireworks[m].force <= -1 && ((rand() >> 8) & 15) == 0) {
 
                         fireworks[m].x = 848 / 2 + (rand() & 511) - 255;
@@ -475,17 +475,17 @@ void demo()
 
 
                     f = ((float) (128 - fireworks[m].force)) / 2.0f;
-                    
+
                     if(fireworks[m].force >= 0) {
                         int alpha;
-                            
+
                         color2 = fireworks[m].color;
-                        
+
                         alpha = fireworks[m].force;
 
                         if(alpha < 0) alpha = 0;
                         color2 = (color2 << 8) | ((alpha << 1) & 0xff);
-                        
+
                         tiny3d_SetPolygon(TINY3D_TRIANGLES);
 
                         for(n = 0; n < 256; n++) {
@@ -498,10 +498,10 @@ void demo()
                                 tiny3d_VertexColor(color2);
 
                                 tiny3d_VertexPos(xx-1.0f, yy+1.0f, 0.0f); // note color element is not necessary repeat here
-                                tiny3d_VertexPos(xx+1.0f, yy+1.0f, 0.0f); 
-                            
+                                tiny3d_VertexPos(xx+1.0f, yy+1.0f, 0.0f);
+
                             }
-                        
+
                         }
 
                         tiny3d_End();
@@ -512,7 +512,7 @@ void demo()
 
                     }
 			}
-                
+
                 // display  estrayk_str string
 
                 if(frame > 60*10) {
@@ -521,11 +521,11 @@ void demo()
                     else
                         string1 = audio_str;
                     }
-                else 
+                else
                     string1 = first_str;
 
-                
-                text_x = 848 / 2 - (strlen(string1) * 16) / 2;	
+
+                text_x = 848 / 2 - (strlen(string1) * 16) / 2;
 
                 for(n = 0; n < strlen(string1); n++) {
                     if(((frame & 32) != 0) ^ (n & 1))
@@ -536,47 +536,47 @@ void demo()
                     text_y=132 + (8 * sin_int((((n +((frame >> 2) & 15)) * 2048)) & 16383)) / 16384;
 
                     text_x = DrawFormatString(text_x, text_y, "%c", string1[n]);
-                    
+
                     }
 
                 // display hermes_str string
 
                 text_x = 848 / 2 - (strlen(hermes_str) *16) / 2;
-                
-                            
+
+
                 for( n = 0; n < strlen(hermes_str); n++) {
 
                     switch((n + (frame >> 2)) & 3) {
                         case 0:
                             SetFontColor(0x4fff4fff, 0x00000000);
                         break;
-                        
+
                         case 1:
                             SetFontColor(0x4f4fffff, 0x00000000);
                         break;
-                        
+
                         case 2:
                             SetFontColor(0xffff4fff, 0x00000000);
                         break;
-                        
+
                         case 3:
                             SetFontColor(0xff4f4fff, 0x00000000);
                         break;
                         }
 
                     text_y= 280 + (8 * sin_int((((n +((frame >> 2) & 15)) * 2048)) & 16383)) / 16384;
-                    
+
                     text_x = DrawFormatString(text_x, text_y, "%c", hermes_str[n]);
 
                     }
 
                 text_x = 0;
                 SetFontColor(0xffffffff, 0x00000000);
-                            
+
                 // display cross / square / triangle string
 
                 switch((frame / 120) & 3) {
-                    
+
                     case 1:
                         string1 = press_triangle_str;
                     break;
@@ -595,9 +595,9 @@ void demo()
                     text_x= 848 / 2 - (strlen(string1) * 16) / 2;
 
                     for( n = 0; n < strlen(string1); n++) {
-                        
+
                         text_y = 430 + (2 * sin_int((((n + ((frame >> 2) & 15)) * 2048)) & 16383)) / 16384;
-                        
+
                         text_x = DrawFormatString(text_x, text_y, "%c", string1[n]);
 
                         }
@@ -607,22 +607,22 @@ void demo()
 
             text_y = 0; text_x = 0;
             SetFontColor(0xffffffff, 0x00000000);
-            
+
             text_x = DrawFormatString(text_x, text_y, "Voices: ");
-            
+
             for(n = 0; n < 16; n++) {
 
                 if(SND_StatusVoice(n) == SND_WORKING)
                     SetFontColor(0xffff00ff, 0x00000000);
-                else 
+                else
                     SetFontColor(0x0000ffff, 0x00000000);
 
                 text_x = DrawFormatString(text_x, text_y, "%c", 48 + n + 7* ( n > 9));
                 }
 
             SetFontColor(0xffffffff, 0x00000000);
-            
-        
+
+
             text_x = DrawFormatString(text_x, text_y, " MP3 Time: %u", GetTimeAudio () / 1000);
 
             frame++;
@@ -630,14 +630,14 @@ void demo()
             SetFontColor(0x00ff00ff, 0x00000000);
             text_x = 0; text_y += 32;
             DrawFormatString(text_x, text_y, "%s", filename);
-          
+
             tiny3d_Flip();
-           
+
             sysUtilCheckCallback();
 
     }
     out:
- 
+
     tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
 
     // Enable alpha Test
@@ -661,7 +661,7 @@ void demo()
 void LoadTexture()
 {
 
-    u32 * texture_mem = tiny3d_AllocTexture(64*1024*1024); // alloc 64MB of space for textures (this pointer can be global)    
+    u32 * texture_mem = tiny3d_AllocTexture(64*1024*1024); // alloc 64MB of space for textures (this pointer can be global)
 
     u32 * texture_pointer; // use to asign texture space without changes texture_mem
 
@@ -677,7 +677,7 @@ void LoadTexture()
 
 int main(int argc, const char* argv[])
 {
-	
+
 	u32 entry = 0;
 	u32 segmentcount = 0;
 	sysSpuSegment* segments;
@@ -703,17 +703,17 @@ int main(int argc, const char* argv[])
             TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
 
     #ifdef FROM_FILE
-    
+
     FILE *fp = fopen("/dev_usb/spu_soundmodule.bin", "r");
 
     if(!fp) return 0;
 
     fseek(fp, 0, SEEK_END);
-    
+
     int len = ftell(fp);
 
     spu_soundmodule_bin = malloc(len);
-    
+
     fseek(fp, 0, SEEK_SET);
 
     fread(spu_soundmodule_bin, 1, len, fp);
@@ -729,7 +729,7 @@ int main(int argc, const char* argv[])
 
 	DrawFormatString(0, text_y, "Initializing raw SPU... %08x", sysSpuRawCreate(&spu, NULL)); text_y += 32;
 
-	DrawFormatString(0, text_y, "Getting ELF information... %08x", 
+	DrawFormatString(0, text_y, "Getting ELF information... %08x",
         sysSpuElfGetInformation(spu_soundmodule_bin, &entry, &segmentcount)); text_y += 32;
 
 	DrawFormatString(0, text_y, "    Entry Point: %08x    Segment Count: %08x", entry, segmentcount); text_y += 32;
@@ -738,10 +738,10 @@ int main(int argc, const char* argv[])
 	segments = (sysSpuSegment*)memalign(128, SPU_SIZE(segmentsize)); // must be aligned to 128 or it break malloc() allocations
 	memset(segments, 0, segmentsize);
 
-	DrawFormatString(0, text_y, "Getting ELF segments... %08x", 
+	DrawFormatString(0, text_y, "Getting ELF segments... %08x",
         sysSpuElfGetSegments(spu_soundmodule_bin, segments, segmentcount)); text_y += 32;
 
-	DrawFormatString(0, text_y, "Loading ELF image... %08x", 
+	DrawFormatString(0, text_y, "Loading ELF image... %08x",
         sysSpuImageImport(&spu_image, spu_soundmodule_bin, 0)); text_y += 32;
 
 	DrawFormatString(0, text_y, "Loading image into SPU... %08x",
@@ -755,11 +755,11 @@ int main(int argc, const char* argv[])
     tiny3d_Flip();
 
     demo();
-    
+
     tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
 	DrawFormatString(0, 0, "Exiting...");
     tiny3d_Flip();
-	
+
 	release_all();
 
     sleep(1);

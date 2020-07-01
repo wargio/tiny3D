@@ -19,20 +19,21 @@ Credits
     Oopo           - ps3libraries
     xerpi          - porting the lib to v2
     deroad/Wargio  - check code
+    Bucanero, CrystalCT, Miigotu, Shagkur, Wargio and Zeldin to update Tiny3D for GCC 7.2.0
 
 License
 -------
-    
+
     It use the same PSL1GHT license (it have one? XD)
-    
-    Some samples can use LPGL, GPL, OFL or maybe others licenses depending of the libraries 
-    or datas used. 
+
+    Some samples can use LPGL, GPL, OFL or maybe others licenses depending of the libraries
+    or datas used.
 
 Environment
 -----------
 
     libtiny3d.a -> the library
-    
+
     tiny3d.h    -> 2D/3D functions
 
     matrix.h    -> Math support for matrix
@@ -40,7 +41,7 @@ Environment
     --------------------------------------
 
     libfont.a   -> library to work with fixed fonts (now allow capture from True Type Fonts)
-    libfont.h   
+    libfont.h
 
 
 Building
@@ -50,7 +51,7 @@ You need the environment variable $PSL1GHT defined
 
     cd tiny3d
     make
-    
+
 It makes and install libs and samples.
 
 Remember you can descend later to the samples folder to compile ONLY the samples:

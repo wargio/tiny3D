@@ -1,4 +1,4 @@
-/* 
+/*
    TINY3D sample / (c) 2010 Hermes  <www.elotrolado.net>
 
 */
@@ -72,14 +72,14 @@ void DrawSpritesRot2D(float x, float y, float layer, float dx, float dy, u32 rgb
     dx /= 2.0f; dy /= 2.0f;
 
     MATRIX matrix;
-    
+
     // rotate and translate the sprite
     matrix = MatrixRotationZ(angle);
     matrix = MatrixMultiply(matrix, MatrixTranslation(x + dx, y + dy, 0.0f));
-    
+
     // fix ModelView Matrix
     tiny3d_SetMatrixModelView(&matrix);
-   
+
     tiny3d_SetPolygon(TINY3D_QUADS);
 
     tiny3d_VertexPos(-dx, -dy, layer);
@@ -128,24 +128,24 @@ void drawScene()
 
     // fix Perspective Projection Matrix
 
-    DrawBackground2D(0x0040ffff) ; // light blue 
+    DrawBackground2D(0x0040ffff) ; // light blue
 
     count_frames++;
 
     for(i = 0; i < 4; i++) {
-        
+
         int cur_text = ghost[i].frame; // get current texture index for frame
 
         // Load sprite texture
         tiny3d_SetTexture(0, texture_ghost_offset[cur_text], texture_ghost[cur_text].width,
-            texture_ghost[cur_text].height, texture_ghost[cur_text].pitch,  
+            texture_ghost[cur_text].height, texture_ghost[cur_text].pitch,
             TINY3D_TEX_FORMAT_A8R8G8B8, TEXTURE_LINEAR);
 
         if(!rotar) {
-            
+
             // draw sprite
             DrawSprites2D(ghost[i].x, ghost[i].y, (float) i, 64, 64, ghost[i].color);
-        
+
         }
         else {
 
@@ -155,24 +155,24 @@ void drawScene()
 
         // update frame
         if(count_frames>8) {
-            
-            ghost[i].frame = ((ghost[i].frame + 1) & 3) | (ghost[i].frame & 4); 
+
+            ghost[i].frame = ((ghost[i].frame + 1) & 3) | (ghost[i].frame & 4);
         }
-        
+
         // update position
-        ghost[i].x += ghost[i].dx; 
+        ghost[i].x += ghost[i].dx;
         ghost[i].y += ghost[i].dy;
 
         // test the limits
         if(ghost[i].x <= 0.0f || ghost[i].x >= (847.0f - 64.0f)) {
-            
+
             ghost[i].x  = (ghost[i].x <= 0.0f) ? 0 : (847.0f - 64.0f);
             ghost[i].dx = -ghost[i].dx;
-            
+
         }
 
         if(ghost[i].y <= 0.0f || ghost[i].y >= (511.0f - 64.0f)) {
-            
+
             ghost[i].y  = (ghost[i].y <= 0.0f) ? 0 : (511.0f - 64.0f);
             ghost[i].dy = -ghost[i].dy;
         }
@@ -180,7 +180,7 @@ void drawScene()
         // change frames to left - right
 
         if(ghost[i].dx >= 0.0f) ghost[i].frame |= 4; else ghost[i].frame &= ~4;
-        
+
     }
 
     if(rotar) rotar--; else rotZ = 0.0f;
@@ -209,7 +209,7 @@ void LoadTexture()
     int i;
 
     u32 * texture_mem = tiny3d_AllocTexture(64*1024*1024); // alloc 64MB of space for textures (this pointer can be global)
-    
+
     u32 * texture_pointer; // use to asign texture space without changes texture_mem
 
     if(!texture_mem) return; // fail!
@@ -222,13 +222,13 @@ void LoadTexture()
     // copy texture datas from PNG to the RSX memory allocated for textures
 
     for(i = 0; i < 8; i++) {
-       
+
         texture_ghost_offset[i]   = 0;
-       
+
         if(texture_ghost[i].bmp_out) {
 
-            memcpy(texture_pointer, texture_ghost[i].bmp_out, texture_ghost[i].pitch * texture_ghost[i].height);
-            
+            RSX_MEMCPY(texture_pointer, texture_ghost[i].bmp_out, texture_ghost[i].pitch * texture_ghost[i].height);
+
             free(texture_ghost[i].bmp_out); // free the PNG because i don't need this datas
 
             texture_ghost_offset[i] = tiny3d_TextureOffset(texture_pointer);      // get the offset (RSX use offset instead address)
@@ -243,7 +243,7 @@ void exiting()
 {
 
     sysModuleUnload(SYSMODULE_PNGDEC);
-  
+
 }
 
 s32 main(s32 argc, const char* argv[])
@@ -251,11 +251,11 @@ s32 main(s32 argc, const char* argv[])
 	padInfo padinfo;
 	padData paddata;
 	int i;
-	
+
 	tiny3d_Init(1024*1024);
 
 	ioPadInit(7);
-    
+
     sysModuleLoad(SYSMODULE_PNGDEC);
 
     atexit(exiting); // Tiny3D register the event 3 and do exit() call when you exit  to the menu
@@ -293,7 +293,7 @@ s32 main(s32 argc, const char* argv[])
     ghost[3].dy    = -1.5f;
     ghost[3].frame = 0;
     ghost[3].color = 0x8fff8f80;
-	
+
 	// Ok, everything is setup. Now for the main loop.
 	while(1) {
 
@@ -310,7 +310,7 @@ s32 main(s32 argc, const char* argv[])
         tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
             TINY3D_BLEND_FUNC_DST_RGB_ONE_MINUS_SRC_ALPHA | TINY3D_BLEND_FUNC_DST_ALPHA_ZERO,
             TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
-      
+
 
 		// Check the pads.
 		ioPadGetInfo(&padinfo);
@@ -319,12 +319,12 @@ s32 main(s32 argc, const char* argv[])
 
 			if(padinfo.status[i]){
 				ioPadGetData(i, &paddata);
-				
+
 				if(paddata.BTN_CROSS){
 					return 0;
 				}
 			}
-			
+
 		}
 
         drawScene(); // Draw
@@ -332,9 +332,9 @@ s32 main(s32 argc, const char* argv[])
         /* DRAWING FINISH HERE */
 
         tiny3d_Flip();
-		
+
 	}
-	
+
 	return 0;
 }
 

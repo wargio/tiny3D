@@ -20,6 +20,10 @@
 
 #include "matrix.h"
 
+#ifndef RSX_MEMCPY
+#define RSX_MEMCPY    __builtin_memcpy
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
