@@ -26,7 +26,7 @@ tiny_gcmContextData *rsxtiny_Init(const u32 cmdSize, const u32 ioSize, const voi
 		return context;
 	}
     #else
-    gcmContextData * contextPointer ATTRIBUTE_PRXPTR;
+    gcmContextData * contextPointer;
 	s32 ret = gcmInitBody(&contextPointer, cmdSize, ioSize, ioAddress);
 	if (ret == 0) {
 		// Double cast fixes warning about diffrent pointer sizes.

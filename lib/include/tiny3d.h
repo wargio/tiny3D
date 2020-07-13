@@ -15,7 +15,7 @@
     #include <rsx/gcm.h>
     #include <rsx/nv40.h>
 #else
-    #include <rsx/rsx.h>
+    #include <rsx/gcm_sys.h>
 #endif
 
 #include "matrix.h"
