@@ -4,7 +4,7 @@
     #include <psl1ght/types.h>
     #include "rsx/gcm.h"
 #else
-    #include <rsx/rsx.h>
+    #include <rsx/gcm_sys.h>
 #endif
 
 #include <sysutil/video.h>
