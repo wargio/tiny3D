@@ -28,7 +28,7 @@ export DEPSDIR		:= $(DEPS)/$(PLATFORM)
 endif
 #---------------------------------------------------------------------------------
 
-TARGET		:=	libfont
+TARGET		:=	libfont3d
 BUILD		:=	build
 SOURCE		:=	source
 INCLUDE		:=	include
