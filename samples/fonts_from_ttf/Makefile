@@ -36,7 +36,7 @@ INCLUDES	:=	include
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		:=	-lfont -lfreetype -lpng -ltiny3d -lrsx -lz -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lsysmodule -lm
+LIBS		:=	-lfont3d -lfreetype -lpng -ltiny3d -lrsx -lz -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lsysmodule -lm
 
 
 #---------------------------------------------------------------------------------
@@ -79,7 +79,7 @@ CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 sFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.S)))
-BINFILES	:= $(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.bin)))
+BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.bin)))
 VCGFILES	:=	$(foreach dir,$(SHADERS),$(notdir $(wildcard $(dir)/*.vcg)))
 FCGFILES	:=	$(foreach dir,$(SHADERS),$(notdir $(wildcard $(dir)/*.fcg)))
 
