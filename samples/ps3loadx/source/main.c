@@ -52,14 +52,14 @@ void release_all();
 
 #define ERROR(a, msg) { \
 	if (a < 0) { \
-		sprintf(msg_error, "PS3LoadX: " msg ); \
+		snprintf(msg_error, sizeof(msg_error), "PS3LoadX: " msg ); \
         usleep(250); \
         if(my_socket >= 0) { close(my_socket);my_socket = -1;} \
 	} \
 }
 #define ERROR2(a, msg) { \
 	if (a < 0) { \
-		sprintf(msg_error, "PS3LoadX: %s", msg ); \
+		snprintf(msg_error, sizeof(msg_error), "PS3LoadX: %s", msg ); \
         sleep(2); \
         msg_error[0] = 0; \
 		usleep(60); \
