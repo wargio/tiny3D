@@ -46,7 +46,7 @@ void release_all();
 
 #define DT_DIR 1
 
-#define VERSION "v1.1"
+#define VERSION "v1.2"
 #define PORT 4299
 #define MAX_ARG_COUNT 0x100
 
@@ -250,7 +250,7 @@ static void control_thread(void* arg)
                         flag_exit = 2;
 
                         if(directories[curdir].device)
-                            sprintf(bootpath, "/dev_usb/homebrew/%s/EBOOT.BIN", &directories[curdir].name[0]);
+                            sprintf(bootpath, "/dev_usb000/homebrew/%s/EBOOT.BIN", &directories[curdir].name[0]);
                         else
                             sprintf(bootpath, "%s/%s/EBOOT.BIN", ps3load_path, &directories[curdir].name[0]);
                     
@@ -286,7 +286,7 @@ static void control_thread(void* arg)
                     if(yesno) {
                        
                         if(directories[curdir].device)
-                            sprintf(filename, "/dev_usb/homebrew/%s", &directories[curdir].name[0]);
+                            sprintf(filename, "/dev_usb000/homebrew/%s", &directories[curdir].name[0]);
                         else
                             sprintf(filename, "%s/%s", ps3load_path, &directories[curdir].name[0]);
 
@@ -306,11 +306,11 @@ static void control_thread(void* arg)
                     if(yesno) {
                        
                         if(directories[curdir].device) {
-                            sprintf(filename, "/dev_usb/homebrew/%s", &directories[curdir].name[0]);
+                            sprintf(filename, "/dev_usb000/homebrew/%s", &directories[curdir].name[0]);
                             sprintf(filename2, "%s/%s", ps3load_path, &directories[curdir].name[0]);
                         } else {
                             sprintf(filename, "%s/%s", ps3load_path, &directories[curdir].name[0]);
-                            sprintf(filename2, "/dev_usb/homebrew/%s", &directories[curdir].name[0]);
+                            sprintf(filename2, "/dev_usb000/homebrew/%s", &directories[curdir].name[0]);
                         }
 
                         yesno =0;
@@ -691,12 +691,12 @@ static void file_thread(void* arg)
         if((counter2 & 31)==0) {
             int refresh = 0;
 
-            if(sysLv2FsOpenDir("/dev_usb/homebrew/", &dir) == 0) {
+            if(sysLv2FsOpenDir("/dev_usb000/homebrew/", &dir) == 0) {
                 if(!pendrive_test) {hdd_test = 0; device_mode = 1; refresh = 1;} else sysLv2FsCloseDir(dir);
             } else {
 
-                if(device_mode == 0 && sysLv2FsOpenDir("/dev_usb/", &dir) == 0) {
-                    mkdir("/dev_usb/homebrew", 0777);
+                if(device_mode == 0 && sysLv2FsOpenDir("/dev_usb000/", &dir) == 0) {
+                    mkdir("/dev_usb000/homebrew", 0777);
                    sysLv2FsCloseDir(dir);
                    hdd_test = 0; pendrive_test = 0;
                    ndirectories = 0;
@@ -732,7 +732,7 @@ static void file_thread(void* arg)
                         directories[n].title[0] = 0;
 
                         if(device_mode)
-                            sprintf(filename, "/dev_usb/homebrew/%s/title.txt", &directories[n].name[0]);
+                            sprintf(filename, "/dev_usb000/homebrew/%s/title.txt", &directories[n].name[0]);
                         else
                             sprintf(filename, "%s/%s/title.txt", ps3load_path, &directories[n].name[0]);
                        
@@ -773,7 +773,7 @@ static void file_thread(void* arg)
                 if(ndirectories && directories[index].text<0) {
                     
                     if(directories[index].device)
-                        sprintf(filename, "/dev_usb/homebrew/%s/ICON0.PNG", &directories[index].name[0]);
+                        sprintf(filename, "/dev_usb000/homebrew/%s/ICON0.PNG", &directories[index].name[0]);
                     else
                         sprintf(filename, "%s/%s/ICON0.PNG", ps3load_path, &directories[index].name[0]);
 
@@ -996,17 +996,17 @@ reloop:
 
 		sprintf(msg_two, "Launching...");
 
-		int fd = open(SELF_PATH, O_CREAT | O_TRUNC | O_WRONLY);
-		ERROR2(fd, "Error opening temporary file.");
+		FILE *fd = fopen(SELF_PATH, "wb");
+		if (!fd) ERROR2(-1, "Error opening temporary file.");
 
 		pos = 0;
 		while (pos < uncompressed) {
 			count = MIN(0x1000, uncompressed - pos);
-			write(fd, data + pos, count);
+			fwrite(data + pos, count, 1, fd);
 			pos += count;
 		}
 
-		close(fd);
+		fclose(fd);
 
         free(data);
 
@@ -1050,7 +1050,7 @@ reloop:
                            ERROR2(-1, "ZIP install cancelled");
                        }
 
-                       if(hdd_install == 2) mkdir("/dev_usb/homebrew", 0777);
+                       if(hdd_install == 2) mkdir("/dev_usb000/homebrew", 0777);
 
 
                     } else {
@@ -1067,7 +1067,7 @@ reloop:
                 if(hdd_install==1)
                     strcpy(path, ps3load_path);
                 else
-                    strcpy(path, "/dev_usb/homebrew");
+                    strcpy(path, "/dev_usb000/homebrew");
 
                 if (filename[0] != '/')
 					strcat(path, "/");
