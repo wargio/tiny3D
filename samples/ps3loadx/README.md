@@ -2,14 +2,11 @@
 
 PS3loadX is my personal evolution of PSL1GHT PS3load sample, using now the Tiny3D library. I hope this version helps to you to work easily ;)
 
+## Features
 - You can load SELF files using the net.
-
 - You can load applications from USB/ HDD devices
-
 - You can install applications to the USB or HDD devices from one .zip file
-
 - You can copy applications from USB devices to HDD
-
 - Also you can delete installed applications.
 
 NOTE:
@@ -35,7 +32,9 @@ app_folder
 |---- title.txt
 ```
 
-`app_folder`: folder to install the app: in USB devices `/dev_usb000/homebrew/app_folder`, from HDD: `/dev_hdd0/game/PSL145310/homebrew/app_folder`
+`app_folder`: folder to install the app
+ - in USB devices `/dev_usb000/homebrew/app_folder`
+ - from HDD: `/dev_hdd0/game/PSL145310/homebrew/app_folder`
 
 `EBOOT.BIN`: SELF file
 
