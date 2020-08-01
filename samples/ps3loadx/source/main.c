@@ -1091,11 +1091,11 @@ reloop:
 						continue;
 					}
 
-					int tfd = open(path, O_CREAT | O_TRUNC | O_WRONLY);
-                    if(tfd < 0) {
+					FILE* tfd = fopen(path, "wb");
+                    if(!tfd) {
 					    zip_fclose(zfd);
                         zip_close(archive);
-                        ERROR2(tfd, "Error opening temporary file.");
+                        ERROR2(-1, "Error opening temporary file.");
                     }
 
 					pos = 0;
@@ -1107,20 +1107,20 @@ reloop:
                             free(buffer);
 
                             zip_fclose(zfd);
-                            close(tfd);
+                            fclose(tfd);
                             zip_close(archive);
 							
                             ERROR2(-1, "Error reading from zip.");
                             
                         }
 
-						write(tfd, buffer, count);
+						fwrite(buffer, count, 1, tfd);
 						pos += count;
 					}
 					free(buffer);
 
 					zip_fclose(zfd);
-					close(tfd);
+					fclose(tfd);
 				} else
 					mkdir(path, 0777);
 			}
