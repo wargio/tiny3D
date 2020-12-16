@@ -49,7 +49,7 @@ Building
 
 You need the environment variable $PSL1GHT defined
 
-    cd tiny3d
+    cd tiny3D
     make
 
 It makes and install libs and samples.
