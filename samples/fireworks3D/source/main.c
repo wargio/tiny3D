@@ -49,13 +49,13 @@
 //#define FROM_FILE
 
 #ifndef FROM_FILE
-#include "spu_soundmodule.bin.h" // load SPU Module
+#include "spu_soundmodule_bin.h" // load SPU Module
 #else
 void * spu_soundmodule_bin = NULL;
 #endif
 
-#include "spu_soundlib.h"
-#include "audioplayer.h"
+#include "soundlib/spu_soundlib.h"
+#include "soundlib/audioplayer.h"
 
 #include "m2003_mp3_bin.h"
 #include "effect_mp3_bin.h"

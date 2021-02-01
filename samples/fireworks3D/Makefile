@@ -37,7 +37,7 @@ INCLUDES	:=	include
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
 LIBS		:=	-lfont3d -ltiny3d -lrsx -lsimdmath -lgcm_sys -lio -lsysutil -lrt -llv2 -lsysmodule \
-			-laudioplayer -lmpg123 -logg -lspu_sound -laudio -lm $(PORTLIBS)/modules/spu_soundmodule.bin.a
+			-laudioplayer -lmpg123 -logg -lspu_sound -laudio -lm -lspu_soundmodule
 
 
 #---------------------------------------------------------------------------------
@@ -107,14 +107,14 @@ export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 #---------------------------------------------------------------------------------
 export INCLUDE	:=	$(foreach dir,$(INCLUDES), -I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-					$(LIBPSL1GHT_INC) \
-					-I$(CURDIR)/$(BUILD) -I$(PORTLIBS)/include -I$(PORTLIBS)/modules
+					$(LIBPSL1GHT_INC) -I$(CURDIR)/$(BUILD) -I$(PORTLIBS)/include \
+					-I$(PORTLIBS)/modules -I$(PORTLIBS)/modules/include
 
 #---------------------------------------------------------------------------------
 # build a list of library paths
 #---------------------------------------------------------------------------------
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
-					$(LIBPSL1GHT_LIB) -L$(PORTLIBS)/lib
+					$(LIBPSL1GHT_LIB) -L$(PORTLIBS)/lib -L$(PORTLIBS)/modules/lib
 
 export OUTPUT	:=	$(CURDIR)/$(TARGET)
 .PHONY: $(BUILD) clean
