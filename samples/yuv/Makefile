@@ -30,7 +30,7 @@ BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data
 SHADERS		:=	shaders
-INCLUDES	:=	include
+INCLUDES	:=	include build
 
 
 #---------------------------------------------------------------------------------
