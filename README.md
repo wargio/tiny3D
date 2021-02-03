@@ -46,8 +46,10 @@ Environment
 
 Building
 --------
-
+In order to build tiny3d you need to have PSL1GHT installed - https://github.com/ps3dev/PSL1GHT
 You need the environment variable $PSL1GHT defined
+
+For the samples to build you need to have ps3soundlib installed - https://github.com/wargio/ps3soundlib
 
     cd tiny3D
     make
